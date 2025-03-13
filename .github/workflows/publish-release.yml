@@ -71,6 +71,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # This is to guarantee that the most recent tag is fetched, which we
+          # need for updating the shorthand major version tag.
+          fetch-depth: 0
           ref: ${{ github.sha }}
       - name: Publish release
         uses: MetaMask/action-publish-release@v3
