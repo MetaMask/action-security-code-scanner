@@ -17,7 +17,7 @@ inputs:
     required: false
   slack_webhook:
     description: "Slack webhook for notifications"
-    required: true
+    required: false
 
 runs:
   using: "composite"
