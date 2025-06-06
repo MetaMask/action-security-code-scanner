@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0]
 
-### Added
-
-- chore(lint): add linting for Conventional Commits ([#30](https://github.com/MetaMask/action-security-code-scanner/pull/30))
-
 ### Changed
 
 - Make slack_webhook an optional input ([#34](https://github.com/MetaMask/action-security-code-scanner/pull/34))
