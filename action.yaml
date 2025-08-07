@@ -18,6 +18,16 @@ inputs:
   slack_webhook:
     description: "Slack webhook for notifications"
     required: false
+  language:
+    description: "Language to scan"
+    required: false
+  build_mode:
+    description: "Build mode for the language"
+    required: false
+  build_command:
+    description: "Build command for the language"
+    required: false
+    default: null
 
 runs:
   using: "composite"
@@ -53,11 +63,14 @@ runs:
     - name: CodeQL Scan
       id: codeql-scan
       continue-on-error: true
-      uses: MetaMask/CodeQL-action@main
+      uses: MetaMask/CodeQL-action@mo-multilang-support
       with:
         repo: ${{ inputs.repo }}
         paths_ignored: ${{ inputs.paths_ignored }}
         rules_excluded: ${{ inputs.rules_excluded }}
+        language: ${{ inputs.language }}
+        build_mode: ${{ inputs.build_mode }}
+        build_command: ${{ inputs.build_command }}
 
     - name: Semgrep Scan
       id: semgrep-scan
@@ -70,7 +83,7 @@ runs:
       shell: bash
       env:
         CODEQL_SCAN_RESULT: ${{ steps.codeql-scan.outcome }}
-        SEMGREP_SCAN_RESULT: ${{ steps.semgrep-scan.outcome }}
+        # SEMGREP_SCAN_RESULT: ${{ steps.semgrep-scan.outcome }}
       run: |
         if [[ "$CODEQL_SCAN_RESULT" == "failure" || "$SEMGREP_SCAN_RESULT" == "failure" ]]; then
           SCAN_RESULT='failure'

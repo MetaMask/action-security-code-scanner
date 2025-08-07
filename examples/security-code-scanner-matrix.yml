@@ -1,0 +1,58 @@
+name: Matrix Security Code Scanner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: null
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+          - language: typescript
+          - language: go
+          - language: java-kotlin
+            build-mode: manual
+            build-command: "./gradlew :coordinator:app:build"
+
+    name: Security Code Scan (${{ matrix.language }})
+    steps:
+      - name: Security Code Scanner - ${{ matrix.language }}
+        uses: MetaMask/action-security-code-scanner@mo-multilang-support
+        with:
+          repo: ${{ github.repository }}
+          language: ${{ matrix.language }}
+          build_mode: ${{ matrix.build-mode }}
+          build_command: ${{ matrix.build-command }}
+          paths_ignored: |
+            .storybook/
+            '**/__snapshots__/'
+            '**/*.snap'
+            '**/*.stories.js'
+            '**/*.stories.tsx'
+            '**/*.test.browser.ts*'
+            '**/*.test.js*'
+            '**/*.test.ts*'
+            '**/fixtures/'
+            '**/jest.config.js'
+            '**/jest.environment.js'
+            '**/mocks/'
+            '**/test*/'
+            docs/
+            e2e/
+            merged-packages/
+            node_modules
+            storybook/
+            test*/
+          project_metrics_token: ${{ secrets.SECURITY_SCAN_METRICS_TOKEN }}
+          slack_webhook: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
