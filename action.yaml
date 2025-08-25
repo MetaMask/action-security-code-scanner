@@ -66,7 +66,7 @@ runs:
     - name: CodeQL Scan
       id: codeql-scan
       continue-on-error: true
-      uses: MetaMask/CodeQL-action@languages
+      uses: MetaMask/CodeQL-action@830afa98760306d66b9ad31cdd56195882218977
       with:
         repo: ${{ inputs.repo }}
         paths_ignored: ${{ inputs.paths_ignored }}
