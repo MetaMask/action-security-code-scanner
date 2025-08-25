@@ -50,6 +50,19 @@ runs:
       run: yarn run check-ghas
       shell: bash
 
+    - name: Detect Repository Languages
+      id: detect-languages
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        echo "Detecting languages for ${{ inputs.repo }}..."
+        LANGUAGES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ inputs.repo }}/languages" | \
+          jq -r 'keys | join(",")')
+        echo "detected-languages=$LANGUAGES" >> $GITHUB_OUTPUT
+        echo "Detected languages: $LANGUAGES"
+
     - name: CodeQL Scan
       id: codeql-scan
       continue-on-error: true
@@ -58,6 +71,7 @@ runs:
         repo: ${{ inputs.repo }}
         paths_ignored: ${{ inputs.paths_ignored }}
         rules_excluded: ${{ inputs.rules_excluded }}
+        languages: ${{ steps.detect-languages.outputs.detected-languages }}
 
     - name: Semgrep Scan
       id: semgrep-scan
