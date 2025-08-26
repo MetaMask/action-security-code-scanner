@@ -53,7 +53,7 @@ runs:
     - name: CodeQL Scan
       id: codeql-scan
       continue-on-error: true
-      uses: MetaMask/CodeQL-action@main
+      uses: MetaMask/CodeQL-action@ellul/yarn-install
       with:
         repo: ${{ inputs.repo }}
         paths_ignored: ${{ inputs.paths_ignored }}
