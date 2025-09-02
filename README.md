@@ -102,7 +102,7 @@ jobs:
           - language: go
           - language: java-kotlin
             build-mode: manual
-            build-command: "./gradlew :coordinator:app:build"
+            build-command: './gradlew :coordinator:app:build'
 
     name: Security Code Scan (${{ matrix.language }})
     steps:
