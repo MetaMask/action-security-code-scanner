@@ -10,8 +10,7 @@ providing a more comprehensive security analysis.
 ## Inputs
 
 - **`repo`**: (Required) The name of the repository you want to scan.
-- **`slack_webhook`**: (Required) Slack webhook URL.
-
+- **`slack_webhook`**: (false) Slack URL to report on scan failures.
 - **`project_metrics_token`**: (optional) Token belonging to a mixpanel project that is used to track build passes & failures.
 - **`paths_ignored`**: (optional) Code paths which are to be ignored. Each should be listed on a new line.
 - **`rules_excluded`**: (optional) Code scanning rules to exclude. Each should be listed on a new line.
