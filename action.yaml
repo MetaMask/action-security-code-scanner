@@ -83,7 +83,7 @@ runs:
       shell: bash
       env:
         CODEQL_SCAN_RESULT: ${{ steps.codeql-scan.outcome }}
-        # SEMGREP_SCAN_RESULT: ${{ steps.semgrep-scan.outcome }}
+        SEMGREP_SCAN_RESULT: ${{ steps.semgrep-scan.outcome }}
       run: |
         if [[ "$CODEQL_SCAN_RESULT" == "failure" || "$SEMGREP_SCAN_RESULT" == "failure" ]]; then
           SCAN_RESULT='failure'
