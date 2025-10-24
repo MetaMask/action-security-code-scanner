@@ -1,0 +1,27 @@
+# Ignore EJS template files
+packages/codeql-action/config/codeql-template.yml
+packages/*/rule.template.*
+**/template.*
+**/*.template.*
+
+# Ignore generated files
+**/generated/**
+**/*.generated.*
+
+# Ignore lock files and cache
+yarn.lock
+package-lock.json
+.yarn/
+node_modules/
+
+# Ignore build outputs
+dist/
+build/
+lib/
+out/
+
+# Ignore logs and temp files
+*.log
+*.sarif
+tmp/
+temp/
