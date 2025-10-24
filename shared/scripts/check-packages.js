@@ -5,7 +5,7 @@
  */
 
 import { execSync } from 'child_process';
-import { readFileSync, readdirSync } from 'fs';
+import { readFileSync, readdirSync, accessSync, constants } from 'fs';
 import { join } from 'path';
 
 const packagesDir = 'packages';
@@ -40,16 +40,40 @@ function checkPackage(packageName) {
     const actionYml = join(packagePath, 'action.yml');
     const actionYaml = join(packagePath, 'action.yaml');
 
+    let actionFileFound = false;
+    let actionFileError = null;
+
+    // Check for action.yml
     try {
+      accessSync(actionYml, constants.F_OK);
       readFileSync(actionYml);
       console.log(`  ✅ Has action.yml file`);
-    } catch {
-      try {
-        readFileSync(actionYaml);
-        console.log(`  ✅ Has action.yaml file`);
-      } catch {
-        console.log(`  ❌ Missing action.yml/action.yaml file`);
+      actionFileFound = true;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        // File doesn't exist, try action.yaml
+        try {
+          accessSync(actionYaml, constants.F_OK);
+          readFileSync(actionYaml);
+          console.log(`  ✅ Has action.yaml file`);
+          actionFileFound = true;
+        } catch (yamlError) {
+          if (yamlError.code === 'ENOENT') {
+            console.log(`  ❌ Missing action.yml/action.yaml file`);
+          } else {
+            console.log(`  ❌ Error reading action.yaml: ${yamlError.message}`);
+            actionFileError = yamlError;
+          }
+        }
+      } else {
+        console.log(`  ❌ Error reading action.yml: ${error.message}`);
+        actionFileError = error;
       }
+    }
+
+    // If we found an action file but had read errors, report them
+    if (actionFileFound && actionFileError) {
+      console.log(`  ⚠️  Action file found but has read issues: ${actionFileError.message}`);
     }
   } catch (error) {
     console.log(`  ❌ Error reading package.json: ${error.message}`);
