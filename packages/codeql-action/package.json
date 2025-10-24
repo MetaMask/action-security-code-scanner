@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Custom CodeQL analysis action",
-  "type": "module",
   "keywords": [],
   "repository": {
     "type": "git",
@@ -11,13 +10,14 @@
   },
   "license": "ISC",
   "author": "witmicko",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "lint": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --check --ignore-path .gitignore --no-error-on-unmatched-pattern",
     "lint:fix": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --write --ignore-path .gitignore --no-error-on-unmatched-pattern",
     "test": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --watch",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --coverage"
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --coverage",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --watch"
   },
   "dependencies": {
     "ejs": "^3.1.10"

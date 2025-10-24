@@ -3,22 +3,28 @@ import { detectLanguages, createMatrix } from '../src/job-configurator.js';
 describe('detectLanguages', () => {
   test('detects multiple languages correctly', () => {
     const githubLanguages = {
-      'JavaScript': 50000,
-      'TypeScript': 30000,
-      'Python': 20000,
-      'Go': 15000,
-      'Java': 10000
+      JavaScript: 50000,
+      TypeScript: 30000,
+      Python: 20000,
+      Go: 15000,
+      Java: 10000,
     };
 
     const result = detectLanguages(githubLanguages);
 
-    expect(result).toEqual(['javascript', 'typescript', 'python', 'go', 'java']);
+    expect(result).toEqual([
+      'javascript',
+      'typescript',
+      'python',
+      'go',
+      'java',
+    ]);
   });
 
   test('maps Kotlin to java', () => {
     const githubLanguages = {
-      'Kotlin': 10000,
-      'Java': 5000
+      Kotlin: 10000,
+      Java: 5000,
     };
 
     const result = detectLanguages(githubLanguages);
@@ -29,7 +35,7 @@ describe('detectLanguages', () => {
   test('maps C/C++ to cpp', () => {
     const githubLanguages = {
       'C++': 20000,
-      'C': 10000
+      C: 10000,
     };
 
     const result = detectLanguages(githubLanguages);
@@ -39,10 +45,10 @@ describe('detectLanguages', () => {
 
   test('ignores unsupported languages', () => {
     const githubLanguages = {
-      'JavaScript': 10000,
-      'HTML': 5000,
-      'CSS': 3000,
-      'Makefile': 1000
+      JavaScript: 10000,
+      HTML: 5000,
+      CSS: 3000,
+      Makefile: 1000,
     };
 
     const result = detectLanguages(githubLanguages);
@@ -52,8 +58,8 @@ describe('detectLanguages', () => {
 
   test('defaults to javascript when no supported languages found', () => {
     const githubLanguages = {
-      'HTML': 5000,
-      'CSS': 3000
+      HTML: 5000,
+      CSS: 3000,
     };
 
     const result = detectLanguages(githubLanguages);
@@ -70,8 +76,8 @@ describe('detectLanguages', () => {
 
   test('removes duplicates', () => {
     const githubLanguages = {
-      'Java': 10000,
-      'Kotlin': 5000  // Both map to 'java'
+      Java: 10000,
+      Kotlin: 5000, // Both map to 'java'
     };
 
     const result = detectLanguages(githubLanguages);
@@ -89,8 +95,12 @@ describe('createMatrix', () => {
       include: [
         { language: 'javascript-typescript' },
         { language: 'python' },
-        { language: 'java-kotlin', build_mode: 'manual', build_command: './mvnw compile' }
-      ]
+        {
+          language: 'java-kotlin',
+          build_mode: 'manual',
+          build_command: './mvnw compile',
+        },
+      ],
     });
   });
 
@@ -101,8 +111,8 @@ describe('createMatrix', () => {
         language: 'java-kotlin',
         build_mode: 'manual',
         build_command: './gradlew build',
-        version: '21'
-      }
+        version: '21',
+      },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
@@ -114,9 +124,9 @@ describe('createMatrix', () => {
           language: 'java-kotlin',
           build_mode: 'manual',
           build_command: './gradlew build',
-          version: '21'
-        }
-      ]
+          version: '21',
+        },
+      ],
     });
   });
 
@@ -124,10 +134,10 @@ describe('createMatrix', () => {
     const detectedLanguages = ['java'];
     const customConfig = [
       {
-        language: 'java',  // Using detected language name instead of scanner language
+        language: 'java', // Using detected language name instead of scanner language
         build_mode: 'manual',
-        build_command: './gradlew build'
-      }
+        build_command: './gradlew build',
+      },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
@@ -137,9 +147,9 @@ describe('createMatrix', () => {
         {
           language: 'java',
           build_mode: 'manual',
-          build_command: './gradlew build'
-        }
-      ]
+          build_command: './gradlew build',
+        },
+      ],
     });
   });
 
@@ -150,8 +160,8 @@ describe('createMatrix', () => {
         language: 'java-kotlin',
         build_mode: 'manual',
         build_command: './gradlew build',
-        version: '21'
-      }
+        version: '21',
+      },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
@@ -162,9 +172,9 @@ describe('createMatrix', () => {
           language: 'java-kotlin',
           build_mode: 'manual',
           build_command: './gradlew build',
-          version: '21'
-        }
-      ]
+          version: '21',
+        },
+      ],
     });
   });
 
@@ -176,8 +186,8 @@ describe('createMatrix', () => {
         build_mode: 'manual',
         build_command: './gradlew build',
         version: '17',
-        distribution: 'zulu'
-      }
+        distribution: 'zulu',
+      },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
@@ -189,9 +199,9 @@ describe('createMatrix', () => {
           build_mode: 'manual',
           build_command: './gradlew build',
           version: '17',
-          distribution: 'zulu'
-        }
-      ]
+          distribution: 'zulu',
+        },
+      ],
     });
   });
 
@@ -199,22 +209,20 @@ describe('createMatrix', () => {
     const detectedLanguages = ['javascript'];
     const customConfig = [
       { language: 'python', build_mode: 'manual' }, // Python not detected
-      { language: 'javascript-typescript', build_mode: 'none' }
+      { language: 'javascript-typescript', build_mode: 'none' },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
 
     expect(result).toEqual({
-      include: [
-        { language: 'javascript-typescript', build_mode: 'none' }
-      ]
+      include: [{ language: 'javascript-typescript', build_mode: 'none' }],
     });
   });
 
   test('handles empty inputs', () => {
     expect(createMatrix([])).toEqual({ include: [] });
     expect(createMatrix(['javascript'], [])).toEqual({
-      include: [{ language: 'javascript-typescript' }]
+      include: [{ language: 'javascript-typescript' }],
     });
   });
 
@@ -224,9 +232,7 @@ describe('createMatrix', () => {
 
     // Should only have one entry since both map to javascript-typescript and duplicates are removed
     expect(result).toEqual({
-      include: [
-        { language: 'javascript-typescript' }
-      ]
+      include: [{ language: 'javascript-typescript' }],
     });
   });
 
@@ -235,9 +241,7 @@ describe('createMatrix', () => {
     const result = createMatrix(detectedLanguages);
 
     expect(result).toEqual({
-      include: [
-        { language: 'javascript-typescript' }
-      ]
+      include: [{ language: 'javascript-typescript' }],
     });
   });
 
@@ -245,7 +249,7 @@ describe('createMatrix', () => {
     const detectedLanguages = ['javascript', 'cpp', 'java'];
     const customConfig = [
       { language: 'cpp', ignore: true },
-      { language: 'java', version: '17' }
+      { language: 'java', version: '17' },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
@@ -257,24 +261,22 @@ describe('createMatrix', () => {
           language: 'java',
           build_mode: 'manual',
           build_command: './mvnw compile',
-          version: '17'
-        }
-      ]
+          version: '17',
+        },
+      ],
     });
   });
 
   test('removes ignore property from final config', () => {
     const detectedLanguages = ['python'];
     const customConfig = [
-      { language: 'python', ignore: false, build_mode: 'none' }
+      { language: 'python', ignore: false, build_mode: 'none' },
     ];
 
     const result = createMatrix(detectedLanguages, customConfig);
 
     expect(result).toEqual({
-      include: [
-        { language: 'python', build_mode: 'none' }
-      ]
+      include: [{ language: 'python', build_mode: 'none' }],
     });
 
     // Ensure ignore property is not in final config

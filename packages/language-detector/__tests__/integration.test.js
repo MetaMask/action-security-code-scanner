@@ -27,7 +27,7 @@ const runScript = async (scriptName, args = []) => {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
         success: code === 0,
-        code
+        code,
       });
     });
 
@@ -36,7 +36,7 @@ const runScript = async (scriptName, args = []) => {
         stdout: '',
         stderr: error.message,
         success: false,
-        code: 1
+        code: 1,
       });
     });
   });
@@ -73,7 +73,9 @@ describe('Language Detection CLI Integration Tests', () => {
     }, 10000);
 
     test('should handle invalid repository gracefully', async () => {
-      const result = await runDetectLanguages('nonexistent/repo-that-does-not-exist');
+      const result = await runDetectLanguages(
+        'nonexistent/repo-that-does-not-exist',
+      );
 
       expect(result.success).toBe(true); // Should not crash
 
@@ -87,7 +89,9 @@ describe('Language Detection CLI Integration Tests', () => {
 
       expect(result.success).toBe(false);
       expect(result.code).toBe(1);
-      expect(result.stderr).toContain('Usage: node detect-languages.js <owner/repo>');
+      expect(result.stderr).toContain(
+        'Usage: node detect-languages.js <owner/repo>',
+      );
     });
 
     test('should work without token (public repos)', async () => {
@@ -112,16 +116,23 @@ describe('Language Detection CLI Integration Tests', () => {
       expect(matrix.include).toHaveLength(3);
 
       // Check expected matrix entries
-      expect(matrix.include).toEqual(expect.arrayContaining([
-        { language: 'javascript-typescript' },
-        { language: 'python' },
-        { language: 'java-kotlin', build_mode: 'manual', build_command: './mvnw compile' }
-      ]));
+      expect(matrix.include).toEqual(
+        expect.arrayContaining([
+          { language: 'javascript-typescript' },
+          { language: 'python' },
+          {
+            language: 'java-kotlin',
+            build_mode: 'manual',
+            build_command: './mvnw compile',
+          },
+        ]),
+      );
     });
 
     test('should merge custom config with detected languages', async () => {
       const detectedLanguages = '["javascript", "java"]';
-      const customConfig = '[{"language":"java-kotlin","build_mode":"manual","build_command":"./gradlew build","version":"21"}]';
+      const customConfig =
+        '[{"language":"java-kotlin","build_mode":"manual","build_command":"./gradlew build","version":"21"}]';
 
       const result = await runCreateMatrix(detectedLanguages, customConfig);
 
@@ -131,18 +142,22 @@ describe('Language Detection CLI Integration Tests', () => {
       expect(matrix.include).toHaveLength(2);
 
       // Should use custom config for java
-      const javaEntry = matrix.include.find(entry => entry.language === 'java-kotlin');
+      const javaEntry = matrix.include.find(
+        (entry) => entry.language === 'java-kotlin',
+      );
       expect(javaEntry).toEqual({
         language: 'java-kotlin',
         build_mode: 'manual',
         build_command: './gradlew build',
-        version: '21'
+        version: '21',
       });
 
       // Should use default config for javascript
-      const jsEntry = matrix.include.find(entry => entry.language === 'javascript-typescript');
+      const jsEntry = matrix.include.find(
+        (entry) => entry.language === 'javascript-typescript',
+      );
       expect(jsEntry).toEqual({
-        language: 'javascript-typescript'
+        language: 'javascript-typescript',
       });
     });
 
@@ -180,7 +195,7 @@ describe('Language Detection CLI Integration Tests', () => {
       const matrix = JSON.parse(result.stdout);
       expect(matrix.include).toEqual([
         { language: 'go' },
-        { language: 'python' }
+        { language: 'python' },
       ]);
     });
   });
@@ -198,8 +213,8 @@ describe('Language Detection CLI Integration Tests', () => {
       expect(matrix.include.length).toBeGreaterThan(0);
 
       // Should contain typescript scanning config
-      const hasTypeScript = matrix.include.some(entry =>
-        entry.language === 'javascript-typescript'
+      const hasTypeScript = matrix.include.some(
+        (entry) => entry.language === 'javascript-typescript',
       );
       expect(hasTypeScript).toBe(true);
     });
@@ -209,27 +224,35 @@ describe('Language Detection CLI Integration Tests', () => {
       const detectedLanguages = '["javascript", "java"]';
 
       // Create matrix with custom Java config
-      const customConfig = '[{"language":"java-kotlin","build_mode":"manual","build_command":"./mvnw compile","version":"17","distribution":"zulu"}]';
-      const matrixResult = await runCreateMatrix(detectedLanguages, customConfig);
+      const customConfig =
+        '[{"language":"java-kotlin","build_mode":"manual","build_command":"./mvnw compile","version":"17","distribution":"zulu"}]';
+      const matrixResult = await runCreateMatrix(
+        detectedLanguages,
+        customConfig,
+      );
 
       expect(matrixResult.success).toBe(true);
 
       const matrix = JSON.parse(matrixResult.stdout);
 
       // Should use custom config for Java
-      const javaEntry = matrix.include.find(entry => entry.language === 'java-kotlin');
+      const javaEntry = matrix.include.find(
+        (entry) => entry.language === 'java-kotlin',
+      );
       expect(javaEntry).toEqual({
         language: 'java-kotlin',
         build_mode: 'manual',
         build_command: './mvnw compile',
         version: '17',
-        distribution: 'zulu'
+        distribution: 'zulu',
       });
 
       // Should use default config for JavaScript
-      const jsEntry = matrix.include.find(entry => entry.language === 'javascript-typescript');
+      const jsEntry = matrix.include.find(
+        (entry) => entry.language === 'javascript-typescript',
+      );
       expect(jsEntry).toEqual({
-        language: 'javascript-typescript'
+        language: 'javascript-typescript',
       });
     });
 
@@ -237,8 +260,12 @@ describe('Language Detection CLI Integration Tests', () => {
       const detectedLanguages = '["java"]';
 
       // Create matrix with custom Java config using Corretto distribution
-      const customConfig = '[{"language":"java-kotlin","build_mode":"manual","build_command":"./gradlew build","version":"11","distribution":"corretto"}]';
-      const matrixResult = await runCreateMatrix(detectedLanguages, customConfig);
+      const customConfig =
+        '[{"language":"java-kotlin","build_mode":"manual","build_command":"./gradlew build","version":"11","distribution":"corretto"}]';
+      const matrixResult = await runCreateMatrix(
+        detectedLanguages,
+        customConfig,
+      );
 
       expect(matrixResult.success).toBe(true);
 
@@ -250,7 +277,7 @@ describe('Language Detection CLI Integration Tests', () => {
         build_mode: 'manual',
         build_command: './gradlew build',
         version: '11',
-        distribution: 'corretto'
+        distribution: 'corretto',
       });
     });
 
@@ -258,8 +285,12 @@ describe('Language Detection CLI Integration Tests', () => {
       const detectedLanguages = '["javascript", "cpp", "java"]';
 
       // Create matrix with cpp ignored and java configured
-      const customConfig = '[{"language":"cpp","ignore":true},{"language":"java","version":"21","distribution":"temurin"}]';
-      const matrixResult = await runCreateMatrix(detectedLanguages, customConfig);
+      const customConfig =
+        '[{"language":"cpp","ignore":true},{"language":"java","version":"21","distribution":"temurin"}]';
+      const matrixResult = await runCreateMatrix(
+        detectedLanguages,
+        customConfig,
+      );
 
       expect(matrixResult.success).toBe(true);
 
@@ -268,21 +299,22 @@ describe('Language Detection CLI Integration Tests', () => {
       // Should have javascript and java, but not cpp
       expect(matrix.include).toHaveLength(2);
 
-      const languages = matrix.include.map(entry => entry.language);
+      const languages = matrix.include.map((entry) => entry.language);
       expect(languages).toContain('javascript-typescript');
       expect(languages).toContain('java');
       expect(languages).not.toContain('cpp');
 
       // Java should have the custom config
-      const javaEntry = matrix.include.find(entry => entry.language === 'java');
+      const javaEntry = matrix.include.find(
+        (entry) => entry.language === 'java',
+      );
       expect(javaEntry).toEqual({
         language: 'java',
         build_mode: 'manual',
         build_command: './mvnw compile',
         version: '21',
-        distribution: 'temurin'
+        distribution: 'temurin',
       });
     });
-
   });
 });

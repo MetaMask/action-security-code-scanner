@@ -63,6 +63,7 @@ Go to Actions → Test Language Detector → Run workflow
 - `action.yml` - GitHub Action wrapper
 
 The JavaScript implementation provides:
+
 - ✅ **Comprehensive test coverage with Jest** - Both unit and integration tests
 - ✅ **Safe integration testing** - No shell execution, direct function calls
 - ✅ **Fast and reliable tests** - ~1.3s runtime, no process spawning overhead

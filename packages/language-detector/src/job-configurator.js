@@ -8,30 +8,34 @@ import { loadRepoConfig } from '../../codeql-action/src/config-loader.js';
  * Maps GitHub language names to CodeQL scanner language names
  */
 const LANGUAGE_MAPPING = {
-  'JavaScript': 'javascript',
-  'TypeScript': 'typescript',
-  'Python': 'python',
-  'Go': 'go',
-  'Java': 'java',
-  'Kotlin': 'java', // Kotlin uses java scanner in CodeQL
+  JavaScript: 'javascript',
+  TypeScript: 'typescript',
+  Python: 'python',
+  Go: 'go',
+  Java: 'java',
+  Kotlin: 'java', // Kotlin uses java scanner in CodeQL
   'C++': 'cpp',
-  'C': 'cpp',
+  C: 'cpp',
   'C#': 'csharp',
-  'Ruby': 'ruby'
+  Ruby: 'ruby',
 };
 
 /**
  * Default scanner configurations for each language
  */
 const DEFAULT_CONFIGS = {
-  'javascript': { language: 'javascript-typescript' },
-  'typescript': { language: 'javascript-typescript' },
-  'python': { language: 'python' },
-  'go': { language: 'go' },
-  'java': { language: 'java-kotlin', build_mode: 'manual', build_command: './mvnw compile' },
-  'cpp': { language: 'cpp' },
-  'csharp': { language: 'csharp' },
-  'ruby': { language: 'ruby' }
+  javascript: { language: 'javascript-typescript' },
+  typescript: { language: 'javascript-typescript' },
+  python: { language: 'python' },
+  go: { language: 'go' },
+  java: {
+    language: 'java-kotlin',
+    build_mode: 'manual',
+    build_command: './mvnw compile',
+  },
+  cpp: { language: 'cpp' },
+  csharp: { language: 'csharp' },
+  ruby: { language: 'ruby' },
 };
 
 /**
@@ -90,13 +94,15 @@ export function createMatrix(detectedLanguages, languagesConfig = []) {
 
   for (const lang of uniqueLanguages) {
     // Check for custom config that matches this language
-    const customConfig = Array.from(customConfigMap.values())
-      .find(config => {
-        // Match if the custom config language matches our detected language
-        // or if it's the scanner language (e.g., 'java-kotlin' for 'java')
-        return config.language === lang ||
-               (DEFAULT_CONFIGS[lang] && config.language === DEFAULT_CONFIGS[lang].language);
-      });
+    const customConfig = Array.from(customConfigMap.values()).find((config) => {
+      // Match if the custom config language matches our detected language
+      // or if it's the scanner language (e.g., 'java-kotlin' for 'java')
+      return (
+        config.language === lang ||
+        (DEFAULT_CONFIGS[lang] &&
+          config.language === DEFAULT_CONFIGS[lang].language)
+      );
+    });
 
     const defaultConfig = DEFAULT_CONFIGS[lang];
 
@@ -124,7 +130,7 @@ export function createMatrix(detectedLanguages, languagesConfig = []) {
 
   // Deduplicate matrix entries by language
   const seenLanguages = new Set();
-  const uniqueMatrixIncludes = matrixIncludes.filter(entry => {
+  const uniqueMatrixIncludes = matrixIncludes.filter((entry) => {
     if (seenLanguages.has(entry.language)) {
       return false;
     }
@@ -144,17 +150,24 @@ export function createMatrix(detectedLanguages, languagesConfig = []) {
 
 // CLI functionality for when this script is run directly
 async function main() {
-  const [detectedLanguagesJson, languagesConfigJson, repo, configDir] = process.argv.slice(2);
+  const [detectedLanguagesJson, languagesConfigJson, repo, configDir] =
+    process.argv.slice(2);
 
   if (!detectedLanguagesJson) {
-    console.error('Usage: node job-configurator.js <detected_languages_json> [languages_config_json] [repo] [config_dir]');
-    console.error('Example: node job-configurator.js \'{"Java": 1000, "JavaScript": 500}\' \'[{"language":"java","version":"21"}]\' \'owner/repo\' \'/path/to/configs\'');
+    console.error(
+      'Usage: node job-configurator.js <detected_languages_json> [languages_config_json] [repo] [config_dir]',
+    );
+    console.error(
+      'Example: node job-configurator.js \'{"Java": 1000, "JavaScript": 500}\' \'[{"language":"java","version":"21"}]\' \'owner/repo\' \'/path/to/configs\'',
+    );
     process.exit(1);
   }
 
   try {
     const githubLanguagesOrArray = JSON.parse(detectedLanguagesJson);
-    let languagesConfig = languagesConfigJson ? JSON.parse(languagesConfigJson) : [];
+    let languagesConfig = languagesConfigJson
+      ? JSON.parse(languagesConfigJson)
+      : [];
 
     // Load repo-specific config from file if repo and configDir are provided
     if (repo && configDir) {
@@ -186,7 +199,7 @@ async function main() {
         if (fileConfig) {
           // Merge: workflow input overrides file config
           const mergedConfig = { ...fileConfig, ...inputConfig };
-          const index = mergedConfigs.findIndex(c => c.language === lang);
+          const index = mergedConfigs.findIndex((c) => c.language === lang);
           mergedConfigs[index] = mergedConfig;
         } else {
           // New language only in workflow input
@@ -231,8 +244,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 export async function fetchGitHubLanguages(repo, token) {
   const url = `https://api.github.com/repos/${repo}/languages`;
   const headers = {
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28'
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
   };
 
   if (token) {
@@ -243,7 +256,9 @@ export async function fetchGitHubLanguages(repo, token) {
     const response = await fetch(url, { headers });
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `GitHub API error: ${response.status} ${response.statusText}`,
+      );
     }
 
     const data = await response.json();
@@ -262,5 +277,3 @@ export async function fetchGitHubLanguages(repo, token) {
     return {};
   }
 }
-
-

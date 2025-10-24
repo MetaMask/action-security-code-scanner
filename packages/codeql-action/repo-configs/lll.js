@@ -3,16 +3,16 @@ const config = {
   rulesExcluded: ['js/log-injection'],
   languages_config: [
     {
-      "language": "java-kotlin",
-      "build_mode": "manual",
-      "build_command": "./gradlew :coordinator:app:build",
-      "version": "21",
-      "distribution": "temurin"
+      language: 'java-kotlin',
+      build_mode: 'manual',
+      build_command: './gradlew :coordinator:app:build',
+      version: '21',
+      distribution: 'temurin',
     },
     {
-      "language": "cpp",
-      "ignore": true
-    }
+      language: 'cpp',
+      ignore: true,
+    },
   ],
   queries: [
     {

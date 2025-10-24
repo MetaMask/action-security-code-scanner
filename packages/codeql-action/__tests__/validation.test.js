@@ -2,7 +2,7 @@ import {
   validateRequiredInputs,
   sanitizePath,
   sanitizeRuleId,
-  escapeOutput
+  escapeOutput,
 } from '../src/validation.js';
 
 describe('validation', () => {
@@ -14,27 +14,37 @@ describe('validation', () => {
 
     test('throws when repo is missing', () => {
       const inputs = { language: 'javascript' };
-      expect(() => validateRequiredInputs(inputs)).toThrow('Missing required inputs');
+      expect(() => validateRequiredInputs(inputs)).toThrow(
+        'Missing required inputs',
+      );
     });
 
     test('throws when language is missing', () => {
       const inputs = { repo: 'owner/repo' };
-      expect(() => validateRequiredInputs(inputs)).toThrow('Missing required inputs');
+      expect(() => validateRequiredInputs(inputs)).toThrow(
+        'Missing required inputs',
+      );
     });
 
     test('throws when both are missing', () => {
       const inputs = {};
-      expect(() => validateRequiredInputs(inputs)).toThrow('Missing required inputs');
+      expect(() => validateRequiredInputs(inputs)).toThrow(
+        'Missing required inputs',
+      );
     });
 
     test('throws when repo is empty string', () => {
       const inputs = { repo: '', language: 'javascript' };
-      expect(() => validateRequiredInputs(inputs)).toThrow('Missing required inputs');
+      expect(() => validateRequiredInputs(inputs)).toThrow(
+        'Missing required inputs',
+      );
     });
 
     test('throws when language is empty string', () => {
       const inputs = { repo: 'owner/repo', language: '' };
-      expect(() => validateRequiredInputs(inputs)).toThrow('Missing required inputs');
+      expect(() => validateRequiredInputs(inputs)).toThrow(
+        'Missing required inputs',
+      );
     });
   });
 
@@ -76,9 +86,15 @@ describe('validation', () => {
     });
 
     test('preserves valid path characters', () => {
-      expect(sanitizePath('src/components/Button.tsx')).toBe('src/components/Button.tsx');
-      expect(sanitizePath('test-utils/helpers_v2.js')).toBe('test-utils/helpers_v2.js');
-      expect(sanitizePath('./node_modules/@types')).toBe('./node_modules/@types');
+      expect(sanitizePath('src/components/Button.tsx')).toBe(
+        'src/components/Button.tsx',
+      );
+      expect(sanitizePath('test-utils/helpers_v2.js')).toBe(
+        'test-utils/helpers_v2.js',
+      );
+      expect(sanitizePath('./node_modules/@types')).toBe(
+        './node_modules/@types',
+      );
     });
 
     test('handles multiple dangerous characters', () => {
@@ -90,11 +106,15 @@ describe('validation', () => {
     test('preserves valid rule IDs', () => {
       expect(sanitizeRuleId('js/log-injection')).toBe('js/log-injection');
       expect(sanitizeRuleId('py/sql-injection')).toBe('py/sql-injection');
-      expect(sanitizeRuleId('java/unsafe-deserialization')).toBe('java/unsafe-deserialization');
+      expect(sanitizeRuleId('java/unsafe-deserialization')).toBe(
+        'java/unsafe-deserialization',
+      );
     });
 
     test('preserves underscores', () => {
-      expect(sanitizeRuleId('js/unsafe_dynamic_access')).toBe('js/unsafe_dynamic_access');
+      expect(sanitizeRuleId('js/unsafe_dynamic_access')).toBe(
+        'js/unsafe_dynamic_access',
+      );
     });
 
     test('removes special characters', () => {
@@ -132,7 +152,9 @@ describe('validation', () => {
     });
 
     test('escapes multiple special characters', () => {
-      expect(escapeOutput('line1\nline2\rvalue%')).toBe('line1%0Aline2%0Dvalue%25');
+      expect(escapeOutput('line1\nline2\rvalue%')).toBe(
+        'line1%0Aline2%0Dvalue%25',
+      );
     });
 
     test('escapes percent before newlines (order matters)', () => {
