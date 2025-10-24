@@ -1,0 +1,10 @@
+#!/bin/bash
+# Run semgrep locally against a directory
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <path/to/directory>"
+    exit 1
+fi
+
+# Run semgrep locally against the provided directory
+semgrep --config rules/src/ "$1"
