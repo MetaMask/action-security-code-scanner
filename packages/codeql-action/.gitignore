@@ -1,0 +1,11 @@
+node_modules/
+package-lock.json
+.env
+pnpm-lock.yaml
+package-lock.json
+.DS_Store
+codeql-config-generated.yml
+github_output
+.env.test
+.yarn/cache
+.yarn/install-state.gz

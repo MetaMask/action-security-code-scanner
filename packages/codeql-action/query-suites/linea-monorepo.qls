@@ -1,0 +1,22 @@
+- queries: '.'
+  from: codeql/javascript-queries
+  include:
+    kind: problem
+
+- queries: '.'
+  from: codeql/go-queries
+  include:
+    kind: problem
+
+- queries: '.'
+  from: codeql/java-queries
+  include:
+    kind: problem
+
+- queries: '.'
+  from: codeql/actions-queries
+  include:
+    kind: problem
+
+
+

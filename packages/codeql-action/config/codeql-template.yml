@@ -1,0 +1,20 @@
+name: "Security Code Scanner CodeQL Config"
+
+paths-ignore:
+<% pathsIgnored.forEach(function(path) { -%>
+  - "<%- path %>"
+<% }); -%>
+
+queries:
+<% queries.forEach(function(query) { -%>
+  - name: <%- query.name %>
+    uses: <%- query.uses %>
+<% }); -%>
+
+<% if (rulesExcluded?.length > 0) { -%>
+query-filters:
+  <% rulesExcluded.forEach(function(rule) { -%>
+- exclude:
+      id: <%- rule %>
+  <% }); -%>
+<% } %>
