@@ -1,28 +1,29 @@
 {
-  "name": "@metamask/action-security-code-scanner",
-  "version": "1.1.0",
-  "description": "Security code scanner for MetaMask",
-  "keywords": [],
+  "name": "@metamask/security-codescanner-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Security Code Scanner - Monorepo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/action-security-code-scanner.git"
+    "url": "https://github.com/metamask/security-codescanner-monorepo.git"
   },
   "license": "ISC",
-  "author": "",
+  "author": "metamask",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "check-ghas": "node ./scripts/check-ghas.js",
-    "lint": "yarn lint:misc --check && yarn lint:dependencies --check && yarn lint:changelog",
-    "lint:changelog": "auto-changelog validate --prettier",
+    "build": "yarn workspaces foreach -A run build",
+    "check": "node shared/scripts/check-packages.js",
+    "clean": "yarn workspaces foreach -A run clean && node shared/scripts/clean-all.js",
+    "install:all": "yarn install --immutable",
+    "lint": "yarn lint:misc --check && yarn lint:dependencies --check",
     "lint:dependencies": "depcheck && yarn dedupe",
-    "lint:fix": "yarn lint:misc --write && yarn lint:dependencies && yarn lint:changelog --fix",
-    "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.sh' '!.yarnrc.yml' --ignore-path .gitignore --no-error-on-unmatched-pattern",
-    "log-to-mixpanel": "node ./scripts/log-to-mixpanel.js"
-  },
-  "dependencies": {
-    "@actions/core": "^1.10.1",
-    "@actions/github": "^6.0.0",
-    "mixpanel": "^0.18.0"
+    "lint:fix": "yarn lint:misc --write && yarn lint:dependencies",
+    "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' '**/*.ts' '!.yarnrc.yml' '!**/codeql-template.yml' '!**/rule.template.*' --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "test": "yarn workspaces foreach -A run test",
+    "validate": "node shared/scripts/validate-actions.js"
   },
   "devDependencies": {
     "@lavamoat/allow-scripts": "^3.3.1",
@@ -31,9 +32,13 @@
     "depcheck": "^1.4.7",
     "prettier": "^3.5.3",
     "prettier-plugin-packagejson": "^2.5.10",
-    "prettier-plugin-sh": "^0.15.0"
+    "prettier-plugin-sh": "^0.15.0",
+    "yaml": "^2.6.1"
   },
   "packageManager": "yarn@4.7.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "lavamoat": {
     "allowScripts": {
       "@lavamoat/preinstall-always-fail": false
