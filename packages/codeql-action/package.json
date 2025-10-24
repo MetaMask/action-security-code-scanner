@@ -1,0 +1,29 @@
+{
+  "name": "@metamask/codeql-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Custom CodeQL analysis action",
+  "type": "module",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MetaMask/security-codescanner-monorepo.git"
+  },
+  "license": "ISC",
+  "author": "witmicko",
+  "main": "index.js",
+  "scripts": {
+    "lint": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --check --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "lint:fix": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --write --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --coverage"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "jest": "^29.7.0"
+  }
+}

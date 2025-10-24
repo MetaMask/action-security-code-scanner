@@ -1,0 +1,130 @@
+name: 'Security Code Scanner - CodeQL'
+description: 'Run custom CodeQL analysis'
+inputs:
+  repo:
+    description: 'Repository that requested the scan'
+    required: true
+  language:
+    description: 'Programming language to analyze'
+    required: true
+  paths_ignored:
+    description: 'Comma delimited paths to ignore during scan'
+    required: false
+  rules_excluded:
+    description: 'Comma delimited IDs of rules to exclude'
+    required: false
+  build_mode:
+    description: 'Build mode for the language'
+    required: false
+  build_command:
+    description: 'Build command for the language'
+    required: false
+    default: null
+  version:
+    description: 'Language/runtime version to use (e.g., 17, 21 for Java; 3.9, 3.10 for Python; 16, 18 for Node.js)'
+    required: false
+  distribution:
+    description: 'Language/runtime distribution to use (e.g., temurin, zulu, corretto for Java; pyenv for Python)'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Debug CodeQL Action Inputs
+      run: |
+        echo "=================== CODEQL ACTION INPUT DEBUG ==================="
+        echo "Repository: ${{ inputs.repo }}"
+        echo "Language: ${{ inputs.language }}"
+        echo "Build mode: ${{ inputs.build_mode }}"
+        echo "Build command: ${{ inputs.build_command }}"
+        echo "Version: ${{ inputs.version }}"
+        echo "Distribution: ${{ inputs.distribution }}"
+        echo "Paths ignored: ${{ inputs.paths_ignored }}"
+        echo "Rules excluded: ${{ inputs.rules_excluded }}"
+        echo "=================================================================="
+      shell: bash
+
+
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
+    - name: Copy Query Suites to Workspace Root
+      run: |
+        echo "Copying query suites to workspace root for CodeQL..."
+        cp -r ${{ github.action_path }}/query-suites ${{ github.workspace }}/
+      shell: bash
+
+    - name: Generate Config
+      id: generate-config
+      run: |
+        # Install dependencies and run script from monorepo directory
+        cd ${{ github.workspace }}/${MONOREPO_PATH:-.security-scanner}
+        yarn install --immutable
+        cd packages/codeql-action
+        node scripts/generate-config.js
+      shell: bash
+      env:
+        REPO: ${{inputs.repo}}
+        LANGUAGE: ${{ inputs.language }}
+        PATHS_IGNORED: ${{ inputs.paths_ignored}}
+        RULES_EXCLUDED: ${{ inputs.rules_excluded}}
+
+    - name: Debug Config Generation Outputs
+      run: |
+        echo "================= CONFIG GENERATION OUTPUTS ================="
+        echo "Languages: ${{ steps.generate-config.outputs.languages }}"
+        echo "Build mode: ${{ steps.generate-config.outputs.build_mode }}"
+        echo "Build command: ${{ steps.generate-config.outputs.build_command }}"
+        echo "Version: ${{ steps.generate-config.outputs.version }}"
+        echo "Distribution: ${{ steps.generate-config.outputs.distribution }}"
+        echo "=============================================================="
+        echo ""
+        echo "================= GENERATED CODEQL CONFIG FILE ================="
+        cat ${{ github.workspace }}/codeql-config-generated.yml
+        echo "=================================================================="
+      shell: bash
+
+    - name: Checkout Custom Query Repository
+      id: checkout-custom-query
+      uses: actions/checkout@v4
+      with:
+        repository: metamask/CodeQL-Queries
+        ref: main
+        path: ${{ github.workspace }}/custom-queries
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        config-file: ${{ github.workspace }}/codeql-config-generated.yml
+        languages: ${{ inputs.language }}
+        source-root: ${{ inputs.repo }}
+
+
+    - name: Set up JDK for Java/Kotlin
+      if: ${{ (inputs.language == 'java-kotlin' || inputs.language == 'java') && steps.generate-config.outputs.version != '' }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ steps.generate-config.outputs.version }}
+        distribution: ${{ steps.generate-config.outputs.distribution || 'temurin' }}
+
+    - name: Build code
+      if: ${{ steps.generate-config.outputs.build_mode == 'manual' && steps.generate-config.outputs.build_command != '' }}
+      run: |
+        echo "Building code with command: ${{ steps.generate-config.outputs.build_command }}"
+        cd ${{ github.workspace }}/${{ inputs.repo }}
+        ${{ steps.generate-config.outputs.build_command }}
+      shell: bash
+
+    - name: Run CodeQL Analysis
+      id: codeql-analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        upload: false
+        checkout_path: ${{ github.workspace }}/${{ inputs.repo }}
+
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.codeql-analysis.outputs.sarif-output }}
+        category: codeql-${{ inputs.language }}
