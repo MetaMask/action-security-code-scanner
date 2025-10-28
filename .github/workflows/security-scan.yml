@@ -171,11 +171,11 @@ jobs:
           SEMGREP_RESULT: ${{ needs.semgrep-analysis.result }}
         run: |
           if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" ]]; then
-            echo "result=failure" >> $GITHUB_OUTPUT
-            echo "SCAN_RESULT=failure" >> $GITHUB_ENV
+            echo "result=failure" >> "$GITHUB_OUTPUT"
+            echo "SCAN_RESULT=failure" >> "$GITHUB_ENV"
           else
-            echo "result=success" >> $GITHUB_OUTPUT
-            echo "SCAN_RESULT=success" >> $GITHUB_ENV
+            echo "result=success" >> "$GITHUB_OUTPUT"
+            echo "SCAN_RESULT=success" >> "$GITHUB_ENV"
           fi
 
       - name: Post to Slack channel
