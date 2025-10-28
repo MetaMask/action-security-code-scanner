@@ -140,7 +140,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MetaMask/experimental-security-codescanner-monorepo
-          ref: ${{ inputs.scanner_ref || 'semgrep-v3' }}
+          ref: ${{ inputs.scanner_ref || 'main' }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
