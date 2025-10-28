@@ -15,10 +15,12 @@ jobs:
 
       - name: Validate Rules
         run: |
+          cd packages/semgrep-action
           bin/validate-rules
         shell: bash
 
       - name: Run Rule Tests
         run: |
+          cd packages/semgrep-action
           bin/test
         shell: bash
