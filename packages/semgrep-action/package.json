@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:MetaMask/security-codescanner-monorepo.git"
+    "url": "git@github.com:MetaMask/action-security-code-scanner.git"
   },
   "license": "ISC",
   "author": "witmicko",

@@ -1,0 +1,24 @@
+name: Test Semgrep Rules
+
+on: [push]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: |
+          pip install semgrep
+
+      - name: Validate Rules
+        run: |
+          bin/validate-rules
+        shell: bash
+
+      - name: Run Rule Tests
+        run: |
+          bin/test
+        shell: bash
