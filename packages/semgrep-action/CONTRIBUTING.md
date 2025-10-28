@@ -11,6 +11,7 @@ Before contributing, ensure that you have [Semgrep](https://semgrep.dev/) instal
 When adding a new rule follow these guidelines:
 
 1. **Start with a Template**
+
    - Use the `rule.template.yml` file located in the root of this repository as a starting point. It includes standard fields and formatting we expect in all rules.
    - To create a new rule, copy the template and place it in the appropriate folder:
      ```bash
@@ -18,6 +19,7 @@ When adding a new rule follow these guidelines:
      ```
 
 2. **Organize Rule Files**
+
    - Rules should be placed in the `rules/src` directory, organized by language or context. For example:
      ```
      rules/src/js/your-js-rule.yml
@@ -27,6 +29,7 @@ When adding a new rule follow these guidelines:
      - Rule ID: `your-js-rule`
 
 3. **Write and Iterate on the Rule**
+
    - Use the [Semgrep Playground](https://semgrep.dev/playground/new) to draft and refine your rule. If you've never written a Semgrep rule before, I recommend working through [Semgrep's interactive tutorial](https://semgrep.dev/learn). If you want to jump right in, check out Semgrep's [rule writing docs](https://semgrep.dev/docs/writing-rules/overview).
 
 4. **Add Test Files**
@@ -71,12 +74,14 @@ rules:
 Testing is a critical step in ensuring the quality and reliability of your rules. Follow these steps:
 
 1. **Write Thorough Test Cases**
+
    - Test files can include:
      - **Positive cases**: Examples where the rule should trigger.
      - **Negative cases**: Examples where the rule should not trigger.
    - Refer to the [Semgrep documentation on testing rules](https://semgrep.dev/docs/writing-rules/testing-rules) for more detailed guidance.
 
 2. **Validate Rule Syntax**
+
    - Use the `bin/validate-rules` script to check for syntax errors:
      ```bash
      ./bin/validate-rules
