@@ -19,6 +19,7 @@
     "clean": "yarn workspaces foreach -A run clean && node shared/scripts/clean-all.js",
     "install:all": "yarn install --immutable",
     "lint": "yarn lint:misc --check && yarn lint:dependencies --check",
+    "lint:changelog": "auto-changelog validate --prettier",
     "lint:dependencies": "depcheck && yarn dedupe",
     "lint:fix": "yarn lint:misc --write && yarn lint:dependencies",
     "lint:misc": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' '**/*.ts' '!.yarnrc.yml' '!**/codeql-template.yml' '!**/rule.template.*' --ignore-path .gitignore --no-error-on-unmatched-pattern",
@@ -28,7 +29,7 @@
   "devDependencies": {
     "@lavamoat/allow-scripts": "^3.3.1",
     "@lavamoat/preinstall-always-fail": "^2.1.0",
-    "@metamask/auto-changelog": "^4.1.0",
+    "@metamask/auto-changelog": "^5.1.0",
     "depcheck": "^1.4.7",
     "prettier": "^3.5.3",
     "prettier-plugin-packagejson": "^2.5.10",
