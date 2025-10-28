@@ -73,7 +73,9 @@ function checkPackage(packageName) {
 
     // If we found an action file but had read errors, report them
     if (actionFileFound && actionFileError) {
-      console.log(`  ⚠️  Action file found but has read issues: ${actionFileError.message}`);
+      console.log(
+        `  ⚠️  Action file found but has read issues: ${actionFileError.message}`,
+      );
     }
   } catch (error) {
     console.log(`  ❌ Error reading package.json: ${error.message}`);

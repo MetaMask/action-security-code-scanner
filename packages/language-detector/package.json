@@ -1,0 +1,19 @@
+{
+  "name": "@metamask/language-detector",
+  "version": "1.0.0",
+  "description": "Language detection and matrix generation for code scanning",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "detect": "node src/detect-languages.js",
+    "matrix": "node src/create-matrix.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest __tests__/integration.test.js",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest __tests__/unit.test.js",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules yarn exec jest --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "30.0.0",
+    "jest": "30.2.0"
+  }
+}

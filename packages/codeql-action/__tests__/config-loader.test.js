@@ -66,7 +66,10 @@ describe('config-loader', () => {
       try {
         // Write a config that will cause an error when evaluated (but is valid JS)
         const badConfigPath = path.join(tempDir, 'errorconfig.js');
-        fs.writeFileSync(badConfigPath, 'throw new Error("Config error"); export default {};');
+        fs.writeFileSync(
+          badConfigPath,
+          'throw new Error("Config error"); export default {};',
+        );
 
         const config = await loadRepoConfig('owner/errorconfig', tempDir);
 

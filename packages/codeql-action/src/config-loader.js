@@ -35,7 +35,6 @@ export async function loadRepoConfig(repo, configDir = null) {
 
     const configModule = await import(`file://${repoConfigPath}`);
     return configModule.default;
-
   } catch (error) {
     console.error(`Error loading config for "${repo}": ${error.message}`);
     console.error('Falling back to default configuration');

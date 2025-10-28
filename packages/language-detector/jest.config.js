@@ -3,6 +3,6 @@ export default {
   transform: {},
   preset: null,
   testMatch: ['**/__tests__/**/*.test.js'],
-  collectCoverageFrom: ['src/**/*.js', 'scripts/**/*.js', '!**/*.test.js'],
+  collectCoverageFrom: ['src/**/*.js', '!src/**/*.test.js'],
   verbose: true,
 };

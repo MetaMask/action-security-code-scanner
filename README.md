@@ -29,6 +29,7 @@ jobs:
 ```
 
 The workflow will:
+
 1. Auto-detect languages in your repository
 2. Load repo-specific config from `repo-configs/` (or use defaults)
 3. Run CodeQL and Semgrep scans in parallel
@@ -50,13 +51,16 @@ const config = {
       build_mode: 'manual',
       build_command: './gradlew build',
       version: '21',
-      distribution: 'temurin'
-    }
+      distribution: 'temurin',
+    },
   ],
   queries: [
     { name: 'Security queries', uses: './query-suites/base.qls' },
-    { name: 'Custom queries', uses: './custom-queries/query-suites/custom-queries.qls' }
-  ]
+    {
+      name: 'Custom queries',
+      uses: './custom-queries/query-suites/custom-queries.qls',
+    },
+  ],
 };
 
 export default config;
@@ -93,7 +97,7 @@ jobs:
     uses: metamask/security-codescanner-monorepo/.github/workflows/security-scan.yml@dev-branch
     with:
       repo: ${{ github.repository }}
-      ref: dev-branch  # Must explicitly pass the branch name
+      ref: dev-branch # Must explicitly pass the branch name
 ```
 
 **Note**: The `@branch` in the `uses:` statement only affects which workflow file is used. The `ref` input ensures all internal monorepo checkouts use the same branch.
@@ -184,6 +188,7 @@ yarn workspaces foreach run <command>
 ### Supported Languages
 
 **CodeQL:**
+
 - JavaScript/TypeScript → `javascript-typescript`
 - Python → `python`
 - Java/Kotlin → `java-kotlin`
@@ -197,21 +202,25 @@ yarn workspaces foreach run <command>
 ## 🎯 Key Features
 
 ### ✅ Automatic Language Detection
+
 - Detects languages via GitHub API
 - Maps to appropriate scanners
 - Configurable per-repository
 
 ### ✅ Optimized Execution
+
 - Parallel scanning per language
 - Matrix-based job strategy
 - Fail-fast for ignored languages
 
 ### ✅ Flexible Configuration
+
 - File-based configs (single source of truth)
 - Workflow input overrides
 - Per-language build settings
 
 ### ✅ Security First
+
 - Minimal token permissions (`contents: read`, `security-events: write`)
 - Input validation and sanitization
 - See [SECURITY.md](./SECURITY.md) for threat model
@@ -219,21 +228,25 @@ yarn workspaces foreach run <command>
 ## 🔍 Troubleshooting
 
 ### Language not detected
+
 - Check GitHub's language detection (repo insights → languages)
 - Ensure language is in `LANGUAGE_MAPPING` in `language-detector/src/job-configurator.js`
 - Add manual `languages_config` in workflow input
 
 ### Build failures
+
 - Verify `build_command` in repo config
 - Check if correct `version` and `distribution` are specified
 - Review CodeQL build logs in Actions
 
 ### Config not loading
+
 - Repo config filename must match repo name: `owner/repo` → `repo.js`
 - Ensure config file exports with `export default config`
 - Check config-loader logs in workflow output
 
 ### Permissions errors
+
 - Add required permissions to calling workflow:
   ```yaml
   permissions:

@@ -4,7 +4,12 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import ejs from 'ejs';
 import { loadRepoConfig } from '../src/config-loader.js';
-import { validateRequiredInputs, sanitizePath, sanitizeRuleId, escapeOutput } from '../src/validation.js';
+import {
+  validateRequiredInputs,
+  sanitizePath,
+  sanitizeRuleId,
+  escapeOutput,
+} from '../src/validation.js';
 
 // ESM equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +18,16 @@ const __dirname = dirname(__filename);
 const outputFile = process.env.GITHUB_OUTPUT;
 const template = fs.readFileSync('config/codeql-template.yml', 'utf8');
 
-const { REPO, LANGUAGE, BUILD_MODE, BUILD_COMMAND, VERSION, DISTRIBUTION, PATHS_IGNORED, RULES_EXCLUDED } = process.env;
+const {
+  REPO,
+  LANGUAGE,
+  BUILD_MODE,
+  BUILD_COMMAND,
+  VERSION,
+  DISTRIBUTION,
+  PATHS_IGNORED,
+  RULES_EXCLUDED,
+} = process.env;
 
 const inputs = {
   repo: REPO,
@@ -23,10 +37,14 @@ const inputs = {
   version: VERSION,
   distribution: DISTRIBUTION,
   pathsIgnored: PATHS_IGNORED
-    ? PATHS_IGNORED.split('\n').filter((line) => line.trim() !== '').map(sanitizePath)
+    ? PATHS_IGNORED.split('\n')
+        .filter((line) => line.trim() !== '')
+        .map(sanitizePath)
     : [],
   rulesExcluded: RULES_EXCLUDED
-    ? RULES_EXCLUDED.split('\n').filter((line) => line.trim() !== '').map(sanitizeRuleId)
+    ? RULES_EXCLUDED.split('\n')
+        .filter((line) => line.trim() !== '')
+        .map(sanitizeRuleId)
     : [],
 };
 
@@ -41,7 +59,7 @@ const applyLanguageConfigFallbacks = (inputs, config) => {
 
   // Find matching language config from languages_config array
   const languageConfig = config.languages_config?.find(
-    langConfig => langConfig.language === inputs.language
+    (langConfig) => langConfig.language === inputs.language,
   );
 
   if (!languageConfig) {
@@ -74,7 +92,10 @@ const applyLanguageConfigFallbacks = (inputs, config) => {
 };
 
 // Main execution - use top-level await (Node.js 14.8+)
-const config = await loadRepoConfig(inputs.repo, path.join(__dirname, '..', 'repo-configs'));
+const config = await loadRepoConfig(
+  inputs.repo,
+  path.join(__dirname, '..', 'repo-configs'),
+);
 
 // Apply language-specific config fallbacks
 const finalInputs = applyLanguageConfigFallbacks(inputs, config);
@@ -83,10 +104,22 @@ const finalInputs = applyLanguageConfigFallbacks(inputs, config);
 fs.appendFileSync(outputFile, `languages=${escapeOutput(config.languages)}\n`);
 
 // set resolved values (inputs + fallbacks) as outputs for use in subsequent action steps (safely escaped)
-fs.appendFileSync(outputFile, `build_mode=${escapeOutput(finalInputs.buildMode || '')}\n`);
-fs.appendFileSync(outputFile, `build_command=${escapeOutput(finalInputs.buildCommand || '')}\n`);
-fs.appendFileSync(outputFile, `version=${escapeOutput(finalInputs.version || '')}\n`);
-fs.appendFileSync(outputFile, `distribution=${escapeOutput(finalInputs.distribution || '')}\n`);
+fs.appendFileSync(
+  outputFile,
+  `build_mode=${escapeOutput(finalInputs.buildMode || '')}\n`,
+);
+fs.appendFileSync(
+  outputFile,
+  `build_command=${escapeOutput(finalInputs.buildCommand || '')}\n`,
+);
+fs.appendFileSync(
+  outputFile,
+  `version=${escapeOutput(finalInputs.version || '')}\n`,
+);
+fs.appendFileSync(
+  outputFile,
+  `distribution=${escapeOutput(finalInputs.distribution || '')}\n`,
+);
 
 const output = ejs.render(template, {
   pathsIgnored: [...config.pathsIgnored, ...finalInputs.pathsIgnored],

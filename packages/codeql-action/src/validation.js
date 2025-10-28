@@ -39,7 +39,7 @@ export function sanitizeRuleId(ruleId) {
 export function escapeOutput(value) {
   if (!value) return '';
   return String(value)
-    .replace(/%/g, '%25')   // % must be first
-    .replace(/\r/g, '%0D')  // carriage return
+    .replace(/%/g, '%25') // % must be first
+    .replace(/\r/g, '%0D') // carriage return
     .replace(/\n/g, '%0A'); // newline
 }

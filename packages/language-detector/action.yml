@@ -1,0 +1,84 @@
+name: 'Language Detector'
+description: 'Detects programming languages in repository using GitHub API and creates scanner matrix'
+
+inputs:
+  repo:
+    description: 'Repository in format owner/repo'
+    required: true
+  languages_config:
+    description: |
+      JSON array of language configurations to merge with auto-detected languages.
+      Example:
+      [
+        {
+          "language": "java-kotlin",
+          "build_mode": "manual",
+          "build_command": "./gradlew build",
+          "version": "21",
+          "distribution": "temurin"
+        },
+        {
+          "language": "javascript-typescript",
+          "build_mode": "none"
+        }
+      ]
+    required: false
+    default: ''
+
+outputs:
+  languages:
+    description: 'JSON array of detected languages'
+    value: ${{ steps.detect.outputs.languages }}
+  matrix:
+    description: 'Scanner matrix configuration'
+    value: ${{ steps.create-matrix.outputs.matrix }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        yarn install --immutable 2>/dev/null || true
+
+    - name: Detect Languages via GitHub API
+      id: detect
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        REPO: ${{ inputs.repo }}
+      run: |
+        cd ${{ github.action_path }}
+        languages=$(node src/detect-languages.js "$REPO" "$GITHUB_TOKEN")
+        echo "languages=$languages" >> $GITHUB_OUTPUT
+        echo "Detected languages: $languages"
+
+    - name: Create Scanner Matrix
+      id: create-matrix
+      shell: bash
+      env:
+        DETECTED_LANGUAGES: ${{ steps.detect.outputs.languages }}
+        LANGUAGES_CONFIG: ${{ inputs.languages_config }}
+        REPO: ${{ inputs.repo }}
+      run: |
+        cd ${{ github.action_path }}
+        # Pass repo and config directory to enable file-based config loading
+        # Try common monorepo paths
+        MONOREPO_PATH="${MONOREPO_PATH:-.security-scanner}"
+        CONFIG_DIR="${{ github.workspace }}/${MONOREPO_PATH}/packages/codeql-action/repo-configs"
+
+        echo "Looking for repo configs at: $CONFIG_DIR"
+        if [ -d "$CONFIG_DIR" ]; then
+          echo "Found config directory, will load repo-specific config"
+          matrix=$(node src/job-configurator.js "$DETECTED_LANGUAGES" "$LANGUAGES_CONFIG" "$REPO" "$CONFIG_DIR")
+        else
+          echo "Config directory not found, using workflow input only"
+          matrix=$(node src/job-configurator.js "$DETECTED_LANGUAGES" "$LANGUAGES_CONFIG")
+        fi
+        echo "matrix=$matrix" >> $GITHUB_OUTPUT
