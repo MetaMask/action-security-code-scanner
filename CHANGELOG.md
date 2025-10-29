@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added multi language support
-- Consolidated all action under one repository
+
+### Changed
+
+- Consolidated all actions under one repository
 
 ## [1.1.0]
 
