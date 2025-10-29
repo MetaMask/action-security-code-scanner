@@ -762,41 +762,54 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lavamoat/aa@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "@lavamoat/aa@npm:4.3.1"
+"@lavamoat/aa@npm:^4.3.4":
+  version: 4.3.4
+  resolution: "@lavamoat/aa@npm:4.3.4"
   dependencies:
-    resolve: "npm:1.22.8"
+    resolve: "npm:1.22.10"
   bin:
     lavamoat-ls: src/cli.js
-  checksum: 10/664692b22c6fcf44a47259ec3b48873c0064872a5a285c7ee4ddc0f99217d5a6653236304cc393f03970f0810694ab44d1f02ce4c980ce86cc24b0e27e9c622f
+  checksum: 10/062e85d6e13f4f59be6bc632d19166e5fdc0c2402aa4d7c2ce39308542d6b4daf8721f498360520abb6707e5590b6755f767c32c075291effeb24c48ed3a18b4
   languageName: node
   linkType: hard
 
-"@lavamoat/allow-scripts@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "@lavamoat/allow-scripts@npm:3.3.1"
+"@lavamoat/allow-scripts@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@lavamoat/allow-scripts@npm:3.4.0"
   dependencies:
-    "@lavamoat/aa": "npm:^4.3.1"
+    "@lavamoat/aa": "npm:^4.3.4"
     "@npmcli/run-script": "npm:8.1.0"
     bin-links: "npm:4.0.4"
     npm-normalize-package-bin: "npm:3.0.1"
-    type-fest: "npm:4.30.0"
+    type-fest: "npm:4.41.0"
     yargs: "npm:17.7.2"
-  peerDependencies:
-    "@lavamoat/preinstall-always-fail": "*"
   bin:
     allow-scripts: src/cli.js
-  checksum: 10/78bb7502136cee509592e66a1824a3e049a392e79740d99f528774743934d28e2099d3e80beded9a6623ce8842250d6207ebeea694d08c87e4fd8e2899eb0d7a
+  checksum: 10/e845200f5ef9136d26ba370b49aecc23b1677d0fc5d9613c689ae3e8d09e9a7f0dacdef2a72f2a832c66eda4945b2faa9b72428bee216f98a2846c32cf5350d9
   languageName: node
   linkType: hard
 
-"@lavamoat/preinstall-always-fail@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@lavamoat/preinstall-always-fail@npm:2.1.0"
-  checksum: 10/385c3fac828b9edff2d8b5825bd29ea475206046984cdb3217518ad655f145ff37046414041534960d92cbe0759f0dc675f7c7dcf39a95003ae715a834fbd750
+"@lavamoat/preinstall-always-fail@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@lavamoat/preinstall-always-fail@npm:2.1.1"
+  checksum: 10/679cfd6b981326bf6f7cce63af4062b1e1e2ffaefd4db316e918ec41ac089c835aafd7f2bb5193cd25538e084d3df1375cd2ac5a52c3e7777aedeb2ee507dd29
   languageName: node
   linkType: hard
+
+"@metamask/action-security-code-scanner@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@metamask/action-security-code-scanner@workspace:."
+  dependencies:
+    "@lavamoat/allow-scripts": "npm:^3.4.0"
+    "@lavamoat/preinstall-always-fail": "npm:^2.1.1"
+    "@metamask/auto-changelog": "npm:^5.1.0"
+    depcheck: "npm:^1.4.7"
+    prettier: "npm:^3.5.3"
+    prettier-plugin-packagejson: "npm:^2.5.10"
+    prettier-plugin-sh: "npm:^0.15.0"
+    yaml: "npm:^2.6.1"
+  languageName: unknown
+  linkType: soft
 
 "@metamask/auto-changelog@npm:^5.1.0":
   version: 5.1.0
@@ -831,21 +844,6 @@ __metadata:
   dependencies:
     "@types/jest": "npm:30.0.0"
     jest: "npm:30.2.0"
-  languageName: unknown
-  linkType: soft
-
-"@metamask/security-codescanner-monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@metamask/security-codescanner-monorepo@workspace:."
-  dependencies:
-    "@lavamoat/allow-scripts": "npm:^3.3.1"
-    "@lavamoat/preinstall-always-fail": "npm:^2.1.0"
-    "@metamask/auto-changelog": "npm:^5.1.0"
-    depcheck: "npm:^1.4.7"
-    prettier: "npm:^3.5.3"
-    prettier-plugin-packagejson: "npm:^2.5.10"
-    prettier-plugin-sh: "npm:^0.15.0"
-    yaml: "npm:^2.6.1"
   languageName: unknown
   linkType: soft
 
@@ -2681,7 +2679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-core-module@npm:^2.12.0, is-core-module@npm:^2.13.0, is-core-module@npm:^2.16.0":
+"is-core-module@npm:^2.12.0, is-core-module@npm:^2.16.0":
   version: 2.16.1
   resolution: "is-core-module@npm:2.16.1"
   dependencies:
@@ -4201,20 +4199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:1.22.8":
-  version: 1.22.8
-  resolution: "resolve@npm:1.22.8"
-  dependencies:
-    is-core-module: "npm:^2.13.0"
-    path-parse: "npm:^1.0.7"
-    supports-preserve-symlinks-flag: "npm:^1.0.0"
-  bin:
-    resolve: bin/resolve
-  checksum: 10/c473506ee01eb45cbcfefb68652ae5759e092e6b0fb64547feadf9736a6394f258fbc6f88e00c5ca36d5477fbb65388b272432a3600fa223062e54333c156753
-  languageName: node
-  linkType: hard
-
-"resolve@npm:^1.22.3":
+"resolve@npm:1.22.10, resolve@npm:^1.22.3":
   version: 1.22.10
   resolution: "resolve@npm:1.22.10"
   dependencies:
@@ -4227,20 +4212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>":
-  version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
-  dependencies:
-    is-core-module: "npm:^2.13.0"
-    path-parse: "npm:^1.0.7"
-    supports-preserve-symlinks-flag: "npm:^1.0.0"
-  bin:
-    resolve: bin/resolve
-  checksum: 10/f345cd37f56a2c0275e3fe062517c650bb673815d885e7507566df589375d165bbbf4bdb6aa95600a9bc55f4744b81f452b5a63f95b9f10a72787dba3c90890a
-  languageName: node
-  linkType: hard
-
-"resolve@patch:resolve@npm%3A^1.22.3#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A1.22.10#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.3#optional!builtin<compat/resolve>":
   version: 1.22.10
   resolution: "resolve@patch:resolve@npm%3A1.22.10#optional!builtin<compat/resolve>::version=1.22.10&hash=c3c19d"
   dependencies:
@@ -4683,10 +4655,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:4.30.0":
-  version: 4.30.0
-  resolution: "type-fest@npm:4.30.0"
-  checksum: 10/46c733df4feb87dfd281fba4fa3913dc38b45136be35adffbcef95e13414105a4669476c1f8686680b9c98e59ed5dc85efe42caf67adbaa04f48dfc41f8330fa
+"type-fest@npm:4.41.0":
+  version: 4.41.0
+  resolution: "type-fest@npm:4.41.0"
+  checksum: 10/617ace794ac0893c2986912d28b3065ad1afb484cad59297835a0807dc63286c39e8675d65f7de08fafa339afcb8fe06a36e9a188b9857756ae1e92ee8bda212
   languageName: node
   linkType: hard
 
