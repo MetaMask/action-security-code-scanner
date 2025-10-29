@@ -5,7 +5,7 @@
   "description": "Security Code Scanner - Monorepo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/metamask/security-codescanner-monorepo.git"
+    "url": "https://github.com/metamask/action-security-code-scanner.git"
   },
   "license": "ISC",
   "author": "metamask",
