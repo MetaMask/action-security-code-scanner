@@ -1,5 +1,5 @@
 {
-  "name": "@metamask/security-codescanner-monorepo",
+  "name": "@metamask/action-security-code-scanner",
   "version": "1.2.0",
   "private": true,
   "description": "Security Code Scanner",
