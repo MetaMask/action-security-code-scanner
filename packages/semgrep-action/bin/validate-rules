@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Validate config is valid before testing
+semgrep --validate --config ./rules/src

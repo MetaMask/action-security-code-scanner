@@ -1,0 +1,22 @@
+{
+  "name": "@metamask/semgrep-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Semgrep-based security scanning action",
+  "keywords": [
+    "security",
+    "semgrep",
+    "github-action"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MetaMask/action-security-code-scanner.git"
+  },
+  "license": "ISC",
+  "author": "witmicko",
+  "scripts": {
+    "lint": "prettier '**/*.json' '**/*.md' '**/*.yml' --check --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "lint:fix": "prettier '**/*.json' '**/*.md' '**/*.yml' --write --ignore-path .gitignore --no-error-on-unmatched-pattern",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

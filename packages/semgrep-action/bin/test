@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Run semgrep test cases for specific rules
+semgrep --test --config rules/src/ rules/test/

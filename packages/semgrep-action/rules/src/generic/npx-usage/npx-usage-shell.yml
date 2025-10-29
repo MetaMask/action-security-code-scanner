@@ -1,0 +1,28 @@
+rules:
+  - id: npx-usage-shell
+    languages:
+      - sh
+      - dockerfile
+    severity: WARNING
+    metadata:
+      tags: [security]
+      shortDescription: 'npx usage introduces supply chain security risks'
+      confidence: HIGH
+      help: |
+        Using npx to install and run packages introduces significant supply chain security risks for the following reasons:
+
+        1. **Unpinned by default**: Running `npx <package>` fetches the latest release outside of your lockfile. If a malicious version of a package is published  ([example])(https://socket.dev/blog/npm-author-qix-compromised-in-major-supply-chain-attack), `npx` will install and execute it the next time it is run.  
+
+        2. **Bypasses lockfile guarantees**: Packages executed with npx are not added to your project's package.json or lockfile. As a result, their versions and lockfile integrity hashes are not captured for reproducibility, making builds non-deterministic and harder to audit
+
+
+        ### Recommended practice
+        - Add packages as dependencies or devDependencies in `package.json`.  
+        - Use your package manager to install and execute them (e.g., `yarn add <package> --dev` followed by `yarn <package> <command>`).
+
+    message: >-
+      Avoid using 'npx' to run packages due to supply chain security risks. Instead, install the package 
+      as a dependency / devDependency and invoke it using your package manager to ensure version pinning 
+      and reproducibility.
+    patterns:
+      - pattern: npx ...

@@ -1,0 +1,35 @@
+{
+  "name": "test-package",
+  "version": "1.0.0",
+  "scripts": {
+    // ruleid: npx-usage-json
+    "lint": "npx eslint .",
+    // ruleid: npx-usage-json
+    "format": "npx prettier --write .",
+    // ruleid: npx-usage-json
+    "type-check": "npx tsc --noEmit",
+    // ruleid: npx-usage-json
+    "storybook": "npx storybook dev -p 6006",
+    // ok: npx-usage-json
+    "test": "yarn jest",
+    // ok: npx-usage-json
+    "build": "yarn build",
+    // ok: npx-usage-json
+    "start": "yarn start",
+    // ok: npx-usage-json
+    "npxify": "yarn npxify",
+    // ok: npx-usage-json
+    "setup": "some-npx-tool --config",
+    // ok: npx-usage-json
+    "install-npx": "yarn add global-npx"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0"
+  },
+  "config": {
+    // ruleid: npx-usage-json
+    "setupCommand": "npx setup-tool"
+  },
+  "description": "A test package with npx in description - should not be flagged"
+}

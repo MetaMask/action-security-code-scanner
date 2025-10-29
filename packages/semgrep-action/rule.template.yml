@@ -1,0 +1,20 @@
+# This template contains the minimum required fields for our Semgrep rules.
+# For detailed guidance on additional fields and best practices, refer to: https://semgrep.dev/docs/writing-rules/overview
+
+rules:
+  - id: # Rule identifier - should match the file name (excluding the extension) for consistency and easy traceability.
+    languages:
+      - "..." # See https://semgrep.dev/docs/supported-languages#language-support for supported languages
+    severity: "..." # Options are INFO, WARN, ERROR. See See https://semgrep.dev/docs/writing-rules/rule-syntax#required
+    metadata:
+      tags: [security]
+      shortDescription: "..." # In GitHub's UI, this is the title of the rule. Keep it concise but descriptive.
+      help: "..." # Used to provide help documentation, or other resources to help users understand and resolve the finding.
+      confidence:
+        "..." # Confidence level of the rule match.
+        # - LOW: Matches are likely false positives or require significant manual review.
+        # - MEDIUM: Matches are often correct but may occasionally require review.
+        # - HIGH: Matches are almost always accurate.
+    message: "..." # Message shown to the user underneath the `shortDescription` once a rule is triggered.
+    pattern:
+      "..." # Add rule pattern here
