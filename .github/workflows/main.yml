@@ -21,11 +21,7 @@ jobs:
 
   analyse-code:
     name: Analyse code
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Analyse code
-        uses: ./.github/workflows/security-scan.yml
+    uses: ./.github/workflows/security-scan.yml
 
   build-lint-test:
     name: Build, lint, and test
