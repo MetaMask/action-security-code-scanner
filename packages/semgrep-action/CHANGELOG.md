@@ -7,8 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+### Uncategorized
+
+- Add missing unreleased reference in changelogs ([#53](https://github.com/MetaMask/action-security-code-scanner/pull/53))
+- chore: fix changelogs, update main ([#52](https://github.com/MetaMask/action-security-code-scanner/pull/52))
+- update changelogs ([#50](https://github.com/MetaMask/action-security-code-scanner/pull/50))
+- Revert "2.0.0 (#49)" ([#49](https://github.com/MetaMask/action-security-code-scanner/pull/49))
+- 2.0.0 ([#49](https://github.com/MetaMask/action-security-code-scanner/pull/49))
+- feat: V2 - Multi language support ([#47](https://github.com/MetaMask/action-security-code-scanner/pull/47))
+
 ### Changed
 
 - Migrated action from its separate repository to the monorepo
 
-[Unreleased]: https://github.com/metamask/action-security-code-scanner/
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.0.0
