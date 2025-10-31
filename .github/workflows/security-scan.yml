@@ -11,11 +11,6 @@ on:
         description: 'Repository that requested the scan'
         required: false
         type: string
-      scanner_ref:
-        description: 'Reference to the scanner repository'
-        required: false
-        type: string
-        default: 'main'
       languages_config:
         description: |
           Optional: JSON array of language configurations to override/supplement repo config file.
@@ -84,7 +79,7 @@ jobs:
 
       - name: Detect languages and create matrix
         id: detect-languages
-        uses: ./.security-scanner/packages/language-detector
+        uses: ./packages/language-detector
         with:
           repo: ${{ inputs.repo }}
           languages_config: ${{ inputs.languages_config }}
@@ -102,13 +97,6 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
-        with:
-          repository: MetaMask/action-security-code-scanner
-          ref: ${{ inputs.scanner_ref || 'main' }}
-          path: ${{ env.MONOREPO_PATH }}
-
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
@@ -116,7 +104,7 @@ jobs:
           path: ${{ inputs.repo }}
 
       - name: Run CodeQL Analysis
-        uses: ./.security-scanner/packages/codeql-action
+        uses: ./packages/codeql-action
         with:
           repo: ${{ inputs.repo }}
           language: ${{ matrix.language }}
@@ -150,7 +138,7 @@ jobs:
           path: ${{ inputs.repo }}
 
       - name: Run Semgrep Analysis
-        uses: ./.security-scanner/packages/semgrep-action
+        uses: ./packages/semgrep-action
         with:
           paths_ignored: ${{ inputs.paths_ignored }}
 
