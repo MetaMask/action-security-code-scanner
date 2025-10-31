@@ -12,7 +12,7 @@ on:
         required: false
         type: string
         default: ${{ github.repository }}
-      languages_config:
+      languages-config:
         description: |
           Optional: JSON array of language configurations to override/supplement repo config file.
           Auto-detects languages and loads repo-specific config from packages/codeql-action/repo-configs/${repo}.cjs.
@@ -34,21 +34,21 @@ on:
         required: false
         type: string
         default: ''
-      ref:
+      scanner-ref:
         description: 'The git ref of the scanner to use'
         required: true
         type: string
-      paths_ignored:
+      paths-ignored:
         description: 'Multi-line list of paths to ignore during scan (one path per line, supports glob patterns)'
         required: false
         type: string
         default: ''
-      rules_excluded:
+      rules-excluded:
         description: 'Comma delimited IDs of rules to exclude'
         required: false
         type: string
         default: ''
-      project_metrics_token:
+      project-metrics-token:
         description: 'Analytics token to log failed builds'
         required: false
         type: string
@@ -73,7 +73,7 @@ jobs:
       - name: Checkout this scanner repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
         uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
         uses: ./packages/language-detector
         with:
           repo: ${{ inputs.repo }}
-          languages_config: ${{ inputs.languages_config }}
+          languages_config: ${{ inputs.languages-config }}
 
   # Run CodeQL analysis for each detected language
   codeql-analysis:
@@ -105,7 +105,7 @@ jobs:
       - name: Checkout this scanner repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
         uses: actions/checkout@v4
@@ -118,8 +118,8 @@ jobs:
         with:
           repo: ${{ inputs.repo }}
           language: ${{ matrix.language }}
-          paths_ignored: ${{ inputs.paths_ignored }}
-          rules_excluded: ${{ inputs.rules_excluded }}
+          paths_ignored: ${{ inputs.paths-ignored }}
+          rules_excluded: ${{ inputs.rules-excluded }}
           build_mode: ${{ matrix.build_mode }}
           build_command: ${{ matrix.build_command }}
           version: ${{ matrix.version }}
@@ -138,7 +138,7 @@ jobs:
       - name: Checkout this scanner repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
         uses: actions/checkout@v4
@@ -158,8 +158,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     env:
-      SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
-      PROJECT_METRICS_TOKEN: ${{ inputs.project_metrics_token }}
+      SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+      PROJECT_METRICS_TOKEN: ${{ inputs.project-metrics-token }}
       REPO: ${{ inputs.repo }}
     steps:
       - name: Determine overall scan result
