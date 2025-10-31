@@ -81,6 +81,7 @@ runs:
       env:
         CODEQL_RESULT: ${{ steps.codeql.outcome }}
         SEMGREP_RESULT: ${{ steps.semgrep.outcome }}
+      shell: bash
       run: |
         if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" ]]; then
           echo "result=failure" >> "$GITHUB_OUTPUT"
@@ -106,10 +107,12 @@ runs:
       env:
         SCAN_RESULT: ${{ steps.scan-result.outputs.result }}
         REPO: ${{ inputs.repo }}
+      shell: bash
       run: |
         # TODO: Implement metrics logging
         echo "Logging scan result: $SCAN_RESULT for repo: $REPO"
 
     - name: Fail if security issues found
       if: ${{ steps.scan-result.outputs.result == 'failure' }}
+      shell: bash
       run: exit 1
