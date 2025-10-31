@@ -53,7 +53,7 @@ on:
         required: false
         type: string
         default: ''
-      slack_webhook:
+      slack-webhook:
         description: 'Slack webhook for notifications'
         required: false
         type: string
@@ -149,7 +149,7 @@ jobs:
       - name: Run Semgrep Analysis
         uses: ./packages/semgrep-action
         with:
-          paths_ignored: ${{ inputs.paths_ignored }}
+          paths_ignored: ${{ inputs.paths-ignored }}
 
   # Collect results and handle notifications
   finalize:
