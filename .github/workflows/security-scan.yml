@@ -73,6 +73,7 @@ jobs:
       - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
+          repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
@@ -105,6 +106,7 @@ jobs:
       - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
+          repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
@@ -138,6 +140,7 @@ jobs:
       - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
+          repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
 
       - name: Checkout target repository
