@@ -60,7 +60,7 @@ on:
         default: ''
 
 env:
-  MONOREPO_PATH: .security-scanner
+  MONOREPO_PATH: .
 
 jobs:
   # Detect languages and create matrix
