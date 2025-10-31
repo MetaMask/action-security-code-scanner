@@ -85,7 +85,7 @@ jobs:
 
       - name: Detect languages and create matrix
         id: detect-languages
-        uses: ./${{ env.MONOREPO_PATH }}/packages/language-detector
+        uses: ./.security-scanner/packages/language-detector
         with:
           repo: ${{ inputs.repo }}
           languages_config: ${{ inputs.languages-config }}
@@ -118,7 +118,7 @@ jobs:
           path: ${{ inputs.repo }}
 
       - name: Run CodeQL Analysis
-        uses: ./${{ env.MONOREPO_PATH }}/packages/codeql-action
+        uses: ./.security-scanner/packages/codeql-action
         with:
           repo: ${{ inputs.repo }}
           language: ${{ matrix.language }}
@@ -153,7 +153,7 @@ jobs:
           path: ${{ inputs.repo }}
 
       - name: Run Semgrep Analysis
-        uses: ./${{ env.MONOREPO_PATH }}/packages/semgrep-action
+        uses: ./.security-scanner/packages/semgrep-action
         with:
           paths_ignored: ${{ inputs.paths-ignored }}
 
