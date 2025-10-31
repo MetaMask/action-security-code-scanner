@@ -11,6 +11,7 @@ on:
         description: 'Repository that requested the scan'
         required: false
         type: string
+        default: ${{ github.repository }}
       languages_config:
         description: |
           Optional: JSON array of language configurations to override/supplement repo config file.
@@ -60,6 +61,7 @@ env:
 jobs:
   # Detect languages and create matrix
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
@@ -79,6 +81,7 @@ jobs:
 
   # Run CodeQL analysis for each detected language
   codeql-analysis:
+    name: CodeQL analysis
     needs: setup
     if: ${{ fromJSON(needs.setup.outputs.matrix).include[0] != null }}
     strategy:
@@ -110,6 +113,7 @@ jobs:
 
   # Run Semgrep analysis once for all languages
   semgrep-analysis:
+    name: Semgrep analysis
     needs: setup
     runs-on: ubuntu-latest
     permissions:
@@ -130,6 +134,7 @@ jobs:
 
   # Collect results and handle notifications
   finalize:
+    name: Finalize scans and notify
     needs: [codeql-analysis, semgrep-analysis]
     if: always()
     runs-on: ubuntu-latest
