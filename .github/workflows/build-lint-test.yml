@@ -13,13 +13,6 @@ jobs:
         with:
           is-high-risk-environment: false
           cache-node-modules: true
-      - run: yarn lint
-      - name: Validate RC changelog
-        if: ${{ startsWith(github.head_ref, 'release/') }}
-        run: yarn lint:changelog --rc
-      - name: Validate changelog
-        if: ${{ !startsWith(github.head_ref, 'release/') }}
-        run: yarn lint:changelog
 
   lint:
     name: Lint
