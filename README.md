@@ -23,9 +23,9 @@ on: [push, pull_request]
 
 jobs:
   security-scan:
-    uses: metamask/security-codescanner-monorepo/.github/workflows/security-scan.yml@main
+    uses: MetaMask/action-security-code-scanner/.github/workflows/security-scan.yml@v2
     with:
-      repo: ${{ github.repository }}
+      scanner-ref: v2
 ```
 
 The workflow will:
