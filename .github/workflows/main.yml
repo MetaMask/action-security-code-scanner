@@ -21,9 +21,11 @@ jobs:
 
   analyse-code:
     name: Analyse code
-    uses: ./action.yml
-    needs:
-      - check-workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: ./
 
   build-lint-test:
     name: Build, lint, and test
