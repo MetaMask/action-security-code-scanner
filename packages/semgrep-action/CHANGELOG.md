@@ -10,3 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Migrated action from its separate repository to the monorepo
+
+[Unreleased]: https://github.com/metamask/action-security-code-scanner/

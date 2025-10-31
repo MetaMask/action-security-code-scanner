@@ -12,3 +12,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated action from its separate repository to the monorepo
 - Added multi language support
 - Updated CodeQL action to v4
+
+[Unreleased]: https://github.com/metamask/action-security-code-scanner/
