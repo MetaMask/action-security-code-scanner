@@ -55,14 +55,14 @@ runs:
   steps:
     - name: Setup security scanner
       id: setup
-      uses: ${{ github.action_path }}/.github/actions/setup.yml
+      uses: ./.github/actions/setup.yml
 
     - name: Run CodeQL analysis
       id: codeql
-      uses: ${{ github.action_path }}/.github/actions/codeql.yml
+      uses: ./.github/actions/codeql.yml
       with:
         matrix: ${{ steps.setup.outputs.matrix }}
-        action-path: ${{ github.action_path }}
+        action-path: .
         repo: ${{ inputs.repo }}
         paths-ignored: ${{ inputs.paths-ignored }}
         rules-excluded: ${{ inputs.rules-excluded }}
@@ -70,9 +70,9 @@ runs:
 
     - name: Run Semgrep analysis
       id: semgrep
-      uses: ${{ github.action_path }}/.github/actions/semgrep.yml
+      uses: ./.github/actions/semgrep.yml
       with:
-        action-path: ${{ github.action_path }}
+        action-path: .
         repo: ${{ inputs.repo }}
         paths-ignored: ${{ inputs.paths-ignored }}
 

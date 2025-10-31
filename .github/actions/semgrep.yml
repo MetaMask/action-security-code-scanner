@@ -33,6 +33,6 @@ jobs:
           path: ${{ inputs.repo }}
 
       - name: Run Semgrep Analysis
-        uses: ${{ github.action_path }}/packages/semgrep-action
+        uses: ${{ inputs.action-path }}/packages/semgrep-action
         with:
           paths_ignored: ${{ inputs.paths-ignored }}
