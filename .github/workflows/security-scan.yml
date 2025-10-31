@@ -11,12 +11,8 @@ on:
         description: 'Repository that requested the scan'
         required: false
         type: string
-      scanner_ref:
-        description: 'Reference to the scanner repository'
-        required: false
-        type: string
-        default: 'main'
-      languages_config:
+        default: ${{ github.repository }}
+      languages-config:
         description: |
           Optional: JSON array of language configurations to override/supplement repo config file.
           Auto-detects languages and loads repo-specific config from packages/codeql-action/repo-configs/${repo}.cjs.
@@ -38,22 +34,26 @@ on:
         required: false
         type: string
         default: ''
-      paths_ignored:
+      scanner-ref:
+        description: 'The git ref of the scanner to use'
+        required: true
+        type: string
+      paths-ignored:
         description: 'Multi-line list of paths to ignore during scan (one path per line, supports glob patterns)'
         required: false
         type: string
         default: ''
-      rules_excluded:
+      rules-excluded:
         description: 'Comma delimited IDs of rules to exclude'
         required: false
         type: string
         default: ''
-      project_metrics_token:
+      project-metrics-token:
         description: 'Analytics token to log failed builds'
         required: false
         type: string
         default: ''
-      slack_webhook:
+      slack-webhook:
         description: 'Slack webhook for notifications'
         required: false
         type: string
@@ -65,6 +65,7 @@ env:
 jobs:
   # Detect languages and create matrix
   setup:
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
@@ -73,7 +74,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MetaMask/action-security-code-scanner
-          ref: ${{ inputs.scanner_ref || 'main' }}
+          ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
@@ -87,10 +88,11 @@ jobs:
         uses: ./.security-scanner/packages/language-detector
         with:
           repo: ${{ inputs.repo }}
-          languages_config: ${{ inputs.languages_config }}
+          languages_config: ${{ inputs.languages-config }}
 
   # Run CodeQL analysis for each detected language
   codeql-analysis:
+    name: CodeQL analysis
     needs: setup
     if: ${{ fromJSON(needs.setup.outputs.matrix).include[0] != null }}
     strategy:
@@ -106,7 +108,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MetaMask/action-security-code-scanner
-          ref: ${{ inputs.scanner_ref || 'main' }}
+          ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
@@ -120,8 +122,8 @@ jobs:
         with:
           repo: ${{ inputs.repo }}
           language: ${{ matrix.language }}
-          paths_ignored: ${{ inputs.paths_ignored }}
-          rules_excluded: ${{ inputs.rules_excluded }}
+          paths_ignored: ${{ inputs.paths-ignored }}
+          rules_excluded: ${{ inputs.rules-excluded }}
           build_mode: ${{ matrix.build_mode }}
           build_command: ${{ matrix.build_command }}
           version: ${{ matrix.version }}
@@ -129,6 +131,7 @@ jobs:
 
   # Run Semgrep analysis once for all languages
   semgrep-analysis:
+    name: Semgrep analysis
     needs: setup
     runs-on: ubuntu-latest
     permissions:
@@ -140,7 +143,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: MetaMask/action-security-code-scanner
-          ref: ${{ inputs.scanner_ref || 'main' }}
+          ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
@@ -152,19 +155,20 @@ jobs:
       - name: Run Semgrep Analysis
         uses: ./.security-scanner/packages/semgrep-action
         with:
-          paths_ignored: ${{ inputs.paths_ignored }}
+          paths_ignored: ${{ inputs.paths-ignored }}
 
   # Collect results and handle notifications
   finalize:
+    name: Finalize scans and notify
     needs: [codeql-analysis, semgrep-analysis]
     if: always()
     runs-on: ubuntu-latest
     env:
-      SLACK_WEBHOOK: ${{ inputs.slack_webhook }}
-      PROJECT_METRICS_TOKEN: ${{ inputs.project_metrics_token }}
+      SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+      PROJECT_METRICS_TOKEN: ${{ inputs.project-metrics-token }}
       REPO: ${{ inputs.repo }}
     steps:
-      - name: Determine Overall Scan Success
+      - name: Determine overall scan result
         id: scan-result
         env:
           CODEQL_RESULT: ${{ needs.codeql-analysis.result }}
