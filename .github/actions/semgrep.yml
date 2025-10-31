@@ -1,0 +1,38 @@
+name: Semgrep analysis
+
+on:
+  workflow_call:
+    inputs:
+      action-path:
+        description: 'Path to the GitHub Action'
+        required: true
+        type: string
+      repo:
+        description: 'The target repository to analyze'
+        required: true
+        type: string
+      paths-ignored:
+        description: 'Comma-separated list of paths to ignore during analysis'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  semgrep-analysis:
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          path: ${{ inputs.repo }}
+
+      - name: Run Semgrep Analysis
+        uses: ${{ github.action_path }}/packages/semgrep-action
+        with:
+          paths_ignored: ${{ inputs.paths-ignored }}

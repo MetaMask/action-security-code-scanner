@@ -1,0 +1,63 @@
+name: CodeQL analysis
+
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        description: 'Matrix to run the CodeQL analysis against'
+        required: true
+        type: string
+      action-path:
+        description: 'Path to the GitHub Action'
+        required: true
+        type: string
+      repo:
+        description: 'The target repository to analyze'
+        required: true
+        type: string
+      paths-ignored:
+        description: 'Comma-separated list of paths to ignore during analysis'
+        required: false
+        type: string
+        default: ''
+      rules-excluded:
+        description: 'Comma-separated list of CodeQL rules to exclude from the analysis'
+        required: false
+        type: string
+        default: ''
+      languages-config:
+        description: 'Configuration for language detection'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  codeql-analysis:
+    needs: setup
+    if: ${{ fromJSON(inputs.matrix).include[0] != null }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(inputs.matrix) }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          path: ${{ inputs.repo }}
+
+      - name: Run CodeQL Analysis
+        uses: ${{ inputs.action-path }}/packages/codeql-action
+        with:
+          repo: ${{ inputs.repo }}
+          language: ${{ matrix.language }}
+          paths_ignored: ${{ inputs.paths-ignored }}
+          rules_excluded: ${{ inputs.rules-excluded }}
+          build_mode: ${{ matrix.build_mode }}
+          build_command: ${{ matrix.build_command }}
+          version: ${{ matrix.version }}
+          distribution: ${{ matrix.distribution }}

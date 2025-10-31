@@ -19,6 +19,12 @@ jobs:
         run: ${{ steps.download-actionlint.outputs.executable }} -color
         shell: bash
 
+  analyse-code:
+    name: Analyse code
+    uses: ./action.yml
+    needs:
+      - check-workflows
+
   build-lint-test:
     name: Build, lint, and test
     uses: ./.github/workflows/build-lint-test.yml

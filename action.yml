@@ -1,0 +1,115 @@
+name: Security code scanner
+
+inputs:
+  repo:
+    description: 'Repository that requested the scan'
+    required: false
+    type: string
+    default: ${{ github.repository }}
+  languages-config:
+    description: |
+      Optional: JSON array of language configurations to override/supplement repo config file.
+      Auto-detects languages and loads repo-specific config from packages/codeql-action/repo-configs/${repo}.cjs.
+      Workflow input takes precedence over file config for same languages.
+      Example:
+      [
+        {
+          "language": "java",
+          "build_mode": "manual",
+          "build_command": "./gradlew build",
+          "version": "21",
+          "distribution": "temurin"
+        },
+        {
+          "language": "javascript",
+          "build_mode": "none"
+        }
+      ]
+    required: false
+    type: string
+    default: ''
+  paths-ignored:
+    description: 'Multi-line list of paths to ignore during scan (one path per line, supports glob patterns)'
+    required: false
+    type: string
+    default: ''
+  rules-excluded:
+    description: 'Comma delimited IDs of rules to exclude'
+    required: false
+    type: string
+    default: ''
+  project-metrics-token:
+    description: 'Analytics token to log failed builds'
+    required: false
+    type: string
+    default: ''
+  slack-webhook:
+    description: 'Slack webhook for notifications'
+    required: false
+    type: string
+    default: ''
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup security scanner
+      id: setup
+      uses: ${{ github.action_path }}/.github/actions/setup.yml
+
+    - name: Run CodeQL analysis
+      id: codeql
+      uses: ${{ github.action_path }}/.github/actions/codeql.yml
+      with:
+        matrix: ${{ steps.setup.outputs.matrix }}
+        action-path: ${{ github.action_path }}
+        repo: ${{ inputs.repo }}
+        paths-ignored: ${{ inputs.paths-ignored }}
+        rules-excluded: ${{ inputs.rules-excluded }}
+        languages-config: ${{ inputs.languages-config }}
+
+    - name: Run Semgrep analysis
+      id: semgrep
+      uses: ${{ github.action_path }}/.github/actions/semgrep.yml
+      with:
+        action-path: ${{ github.action_path }}
+        repo: ${{ inputs.repo }}
+        paths-ignored: ${{ inputs.paths-ignored }}
+
+    - name: Determine overall scan result
+      id: scan-result
+      env:
+        CODEQL_RESULT: ${{ steps.codeql.outcome }}
+        SEMGREP_RESULT: ${{ steps.semgrep.outcome }}
+      run: |
+        if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" ]]; then
+          echo "result=failure" >> "$GITHUB_OUTPUT"
+        else
+          echo "result=success" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Post to Slack channel
+      if: ${{ steps.scan-result.outputs.result == 'failure' && env.SLACK_WEBHOOK != '' }}
+      uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844
+      with:
+        payload: |
+          {
+            "text": "Security scan failed for ${{ env.REPO }} - Run: https://github.com/${{ env.REPO }}/actions/runs/${{ github.run_id }}",
+            "channel": "#security-notifications"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+    - name: Log metrics
+      if: ${{ env.PROJECT_METRICS_TOKEN != '' }}
+      env:
+        SCAN_RESULT: ${{ steps.scan-result.outputs.result }}
+        REPO: ${{ inputs.repo }}
+      run: |
+        # TODO: Implement metrics logging
+        echo "Logging scan result: $SCAN_RESULT for repo: $REPO"
+
+    - name: Fail if security issues found
+      if: ${{ steps.scan-result.outputs.result == 'failure' }}
+      run: exit 1

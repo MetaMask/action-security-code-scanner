@@ -1,0 +1,34 @@
+name: Setup
+
+on:
+  workflow_call:
+    inputs:
+      repo:
+        description: 'The target repository to analyze'
+        required: true
+        type: string
+      languages-config:
+        description: 'Configuration for language detection'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  # Detect languages and create matrix
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.detect-languages.outputs.matrix }}
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repo }}
+          path: ${{ inputs.repo }}
+
+      - name: Detect languages and create matrix
+        id: detect-languages
+        uses: ${{ github.action_path }}/packages/language-detector
+        with:
+          repo: ${{ inputs.repo }}
+          languages_config: ${{ inputs.languages-config }}
