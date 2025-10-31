@@ -70,7 +70,7 @@ jobs:
     outputs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
     steps:
-      - name: Checkout this scanner repository
+      - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.scanner-ref }}
@@ -102,7 +102,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - name: Checkout this scanner repository
+      - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.scanner-ref }}
@@ -135,7 +135,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - name: Checkout this scanner repository
+      - name: Checkout monorepo (for local actions)
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.scanner-ref }}
