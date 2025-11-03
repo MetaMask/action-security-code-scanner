@@ -48,16 +48,13 @@ on:
         required: false
         type: string
         default: ''
+    secrets:
       project-metrics-token:
         description: 'Analytics token to log failed builds'
         required: false
-        type: string
-        default: ''
       slack-webhook:
         description: 'Slack webhook for notifications'
         required: false
-        type: string
-        default: ''
 
 env:
   MONOREPO_PATH: .security-scanner
@@ -164,8 +161,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     env:
-      SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
-      PROJECT_METRICS_TOKEN: ${{ inputs.project-metrics-token }}
+      SLACK_WEBHOOK: ${{ secrets.slack-webhook }}
+      PROJECT_METRICS_TOKEN: ${{ secrets.project-metrics-token }}
       REPO: ${{ inputs.repo }}
     steps:
       - name: Determine overall scan result
