@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1]
+
+### Uncategorized
+
+- Update `codeql-action` README to use `v2` ([#58](https://github.com/MetaMask/action-security-code-scanner/pull/58))
+
 ## [2.0.0]
 
 ### Changed
@@ -15,5 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added multi language support
 - Updated CodeQL action to v4
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.0.0
