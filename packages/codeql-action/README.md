@@ -42,10 +42,10 @@ name: Security Scan
 on: [push, pull_request]
 
 jobs:
-  security:
-    uses: metamask/security-codescanner-monorepo/.github/workflows/security-scan.yml@main
+  security-scan:
+    uses: MetaMask/action-security-code-scanner/.github/workflows/security-scan.yml@v2
     with:
-      repo: ${{ github.repository }}
+      scanner-ref: v2
     permissions:
       actions: read
       contents: read

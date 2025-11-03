@@ -26,6 +26,10 @@ jobs:
     uses: MetaMask/action-security-code-scanner/.github/workflows/security-scan.yml@v2
     with:
       scanner-ref: v2
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 ```
 
 The workflow will:
