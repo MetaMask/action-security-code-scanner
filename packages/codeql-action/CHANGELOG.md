@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.1]
 
-### Uncategorized
+### Fixed
 
-- Update `codeql-action` README to use `v2` ([#58](https://github.com/MetaMask/action-security-code-scanner/pull/58))
+- Use secrets for `project-metrics-token` and `slack-webhook` ([#57](https://github.com/MetaMask/action-security-code-scanner/pull/57))
+  - These can now be specified as secrets, instead of options under `with`.
 
 ## [2.0.0]
 
