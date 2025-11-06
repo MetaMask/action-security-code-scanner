@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated language detector to add Github Actions support by default
+
 ## [2.0.1]
 
 ### Fixed

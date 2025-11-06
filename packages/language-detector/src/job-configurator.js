@@ -36,6 +36,7 @@ const DEFAULT_CONFIGS = {
   cpp: { language: 'cpp' },
   csharp: { language: 'csharp' },
   ruby: { language: 'ruby' },
+  actions: { language: 'actions' },
 };
 
 /**
@@ -89,8 +90,8 @@ export function createMatrix(detectedLanguages, languagesConfig = []) {
   console.error('Auto-detected languages:', detectedLanguages);
   console.error('Provided custom configs:', languagesConfig);
 
-  // Remove duplicates from detected languages
-  const uniqueLanguages = [...new Set(detectedLanguages)];
+  // Remove duplicates from detected languages and always add 'actions'
+  const uniqueLanguages = [...new Set([...detectedLanguages, 'actions'])];
 
   for (const lang of uniqueLanguages) {
     // Check for custom config that matches this language
