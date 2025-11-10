@@ -12,6 +12,7 @@ const LANGUAGE_MAPPING = {
   TypeScript: 'typescript',
   Python: 'python',
   Go: 'go',
+  Swift: 'swift',
   Java: 'java',
   Kotlin: 'java', // Kotlin uses java scanner in CodeQL
   'C++': 'cpp',
@@ -33,6 +34,7 @@ const DEFAULT_CONFIGS = {
     build_mode: 'manual',
     build_command: './mvnw compile',
   },
+  swift: { language: 'swift' },
   cpp: { language: 'cpp' },
   csharp: { language: 'csharp' },
   ruby: { language: 'ruby' },
