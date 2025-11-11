@@ -100,8 +100,9 @@ const config = await loadRepoConfig(
 // Apply language-specific config fallbacks
 const finalInputs = applyLanguageConfigFallbacks(inputs, config);
 
-// set languages output (safely escaped)
-fs.appendFileSync(outputFile, `languages=${escapeOutput(config.languages)}\n`);
+// set languages output (safely escaped) - inputs take precedence over config
+const languages = inputs.language || config.languages || '';
+fs.appendFileSync(outputFile, `languages=${escapeOutput(languages)}\n`);
 
 // set resolved values (inputs + fallbacks) as outputs for use in subsequent action steps (safely escaped)
 fs.appendFileSync(

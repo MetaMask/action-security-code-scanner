@@ -14,12 +14,12 @@ export function validateRequiredInputs(inputs) {
 }
 
 /**
- * Sanitize path strings - remove shell metacharacters (good hygiene, prevents accidental issues)
+ * Sanitize path strings - remove shell metacharacters and quotes (good hygiene, prevents accidental issues)
  * @param {string} pathStr - Path string to sanitize
  * @returns {string} Sanitized path
  */
 export function sanitizePath(pathStr) {
-  return pathStr.replace(/[;&|`$(){}[\]<>]/g, '');
+  return pathStr.replace(/[;&|`$(){}[\]<>'"]/g, '');
 }
 
 /**
