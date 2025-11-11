@@ -112,7 +112,10 @@ async function main() {
   const distribution = inputs.distribution || finalInputs.distribution || '';
 
   fs.appendFileSync(outputFile, `build_mode=${escapeOutput(buildMode)}\n`);
-  fs.appendFileSync(outputFile, `build_command=${escapeOutput(buildCommand)}\n`);
+  fs.appendFileSync(
+    outputFile,
+    `build_command=${escapeOutput(buildCommand)}\n`,
+  );
   fs.appendFileSync(outputFile, `version=${escapeOutput(version)}\n`);
   fs.appendFileSync(outputFile, `distribution=${escapeOutput(distribution)}\n`);
 

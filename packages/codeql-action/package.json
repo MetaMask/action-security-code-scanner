@@ -15,9 +15,9 @@
   "scripts": {
     "lint": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --check --ignore-path .gitignore --no-error-on-unmatched-pattern",
     "lint:fix": "prettier '**/*.json' '**/*.md' '**/*.yml' '**/*.js' --write --ignore-path .gitignore --no-error-on-unmatched-pattern",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules npx jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules yarn test",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules yarn test:coverage",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules yarn test:watch"
   },
   "dependencies": {
     "ejs": "^3.1.10"
