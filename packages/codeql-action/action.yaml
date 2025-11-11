@@ -67,6 +67,10 @@ runs:
       env:
         REPO: ${{inputs.repo}}
         LANGUAGE: ${{ inputs.language }}
+        BUILD_MODE: ${{ inputs.build_mode }}
+        BUILD_COMMAND: ${{ inputs.build_command }}
+        VERSION: ${{ inputs.version }}
+        DISTRIBUTION: ${{ inputs.distribution }}
         PATHS_IGNORED: ${{ inputs.paths_ignored}}
         RULES_EXCLUDED: ${{ inputs.rules_excluded}}
 
