@@ -15,43 +15,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const outputFile = process.env.GITHUB_OUTPUT;
-const template = fs.readFileSync('config/codeql-template.yml', 'utf8');
-
-const {
-  REPO,
-  LANGUAGE,
-  BUILD_MODE,
-  BUILD_COMMAND,
-  VERSION,
-  DISTRIBUTION,
-  PATHS_IGNORED,
-  RULES_EXCLUDED,
-} = process.env;
-
-const inputs = {
-  repo: REPO,
-  language: LANGUAGE,
-  buildMode: BUILD_MODE,
-  buildCommand: BUILD_COMMAND,
-  version: VERSION,
-  distribution: DISTRIBUTION,
-  pathsIgnored: PATHS_IGNORED
-    ? PATHS_IGNORED.split('\n')
-        .filter((line) => line.trim() !== '')
-        .map(sanitizePath)
-    : [],
-  rulesExcluded: RULES_EXCLUDED
-    ? RULES_EXCLUDED.split('\n')
-        .filter((line) => line.trim() !== '')
-        .map(sanitizeRuleId)
-    : [],
-};
-
-// Validate required inputs
-validateRequiredInputs(inputs);
-
-const applyLanguageConfigFallbacks = (inputs, config) => {
+export const applyLanguageConfigFallbacks = (inputs, config) => {
   // If no language is specified, return inputs as-is
   if (!inputs.language) {
     return inputs;
@@ -91,46 +55,85 @@ const applyLanguageConfigFallbacks = (inputs, config) => {
   return inputsWithFallbacks;
 };
 
-// Main execution - use top-level await (Node.js 14.8+)
-const config = await loadRepoConfig(
-  inputs.repo,
-  path.join(__dirname, '..', 'repo-configs'),
-);
+// Main execution function
+async function main() {
+  const outputFile = process.env.GITHUB_OUTPUT;
+  const template = fs.readFileSync('config/codeql-template.yml', 'utf8');
 
-// Apply language-specific config fallbacks
-const finalInputs = applyLanguageConfigFallbacks(inputs, config);
+  const {
+    REPO,
+    LANGUAGE,
+    BUILD_MODE,
+    BUILD_COMMAND,
+    VERSION,
+    DISTRIBUTION,
+    PATHS_IGNORED,
+    RULES_EXCLUDED,
+  } = process.env;
 
-// set languages output (safely escaped) - inputs take precedence over config
-const languages = inputs.language || config.languages || '';
-fs.appendFileSync(outputFile, `languages=${escapeOutput(languages)}\n`);
+  const inputs = {
+    repo: REPO,
+    language: LANGUAGE,
+    buildMode: BUILD_MODE,
+    buildCommand: BUILD_COMMAND,
+    version: VERSION,
+    distribution: DISTRIBUTION,
+    pathsIgnored: PATHS_IGNORED
+      ? PATHS_IGNORED.split('\n')
+          .filter((line) => line.trim() !== '')
+          .map(sanitizePath)
+      : [],
+    rulesExcluded: RULES_EXCLUDED
+      ? RULES_EXCLUDED.split('\n')
+          .filter((line) => line.trim() !== '')
+          .map(sanitizeRuleId)
+      : [],
+  };
 
-// set resolved values (inputs + fallbacks) as outputs for use in subsequent action steps (safely escaped)
-fs.appendFileSync(
-  outputFile,
-  `build_mode=${escapeOutput(finalInputs.buildMode || '')}\n`,
-);
-fs.appendFileSync(
-  outputFile,
-  `build_command=${escapeOutput(finalInputs.buildCommand || '')}\n`,
-);
-fs.appendFileSync(
-  outputFile,
-  `version=${escapeOutput(finalInputs.version || '')}\n`,
-);
-fs.appendFileSync(
-  outputFile,
-  `distribution=${escapeOutput(finalInputs.distribution || '')}\n`,
-);
+  // Validate required inputs
+  validateRequiredInputs(inputs);
 
-const output = ejs.render(template, {
-  pathsIgnored: [...config.pathsIgnored, ...finalInputs.pathsIgnored],
-  rulesExcluded: [...config.rulesExcluded, ...finalInputs.rulesExcluded],
-  queries: config.queries,
-});
+  const config = await loadRepoConfig(
+    inputs.repo,
+    path.join(__dirname, '..', 'repo-configs'),
+  );
 
-// Write to workspace root (or current directory if GITHUB_WORKSPACE not set)
-const outputPath = process.env.GITHUB_WORKSPACE
-  ? path.join(process.env.GITHUB_WORKSPACE, 'codeql-config-generated.yml')
-  : 'codeql-config-generated.yml';
+  // Apply language-specific config fallbacks
+  const finalInputs = applyLanguageConfigFallbacks(inputs, config);
 
-fs.writeFileSync(outputPath, output);
+  // set languages output (safely escaped) - inputs take precedence over config
+  const languages = inputs.language || config.languages || '';
+  fs.appendFileSync(outputFile, `languages=${escapeOutput(languages)}\n`);
+
+  // set resolved values - inputs take precedence, then config fallbacks (safely escaped)
+  const buildMode = inputs.buildMode || finalInputs.buildMode || '';
+  const buildCommand = inputs.buildCommand || finalInputs.buildCommand || '';
+  const version = inputs.version || finalInputs.version || '';
+  const distribution = inputs.distribution || finalInputs.distribution || '';
+
+  fs.appendFileSync(outputFile, `build_mode=${escapeOutput(buildMode)}\n`);
+  fs.appendFileSync(outputFile, `build_command=${escapeOutput(buildCommand)}\n`);
+  fs.appendFileSync(outputFile, `version=${escapeOutput(version)}\n`);
+  fs.appendFileSync(outputFile, `distribution=${escapeOutput(distribution)}\n`);
+
+  const output = ejs.render(template, {
+    pathsIgnored: [...config.pathsIgnored, ...finalInputs.pathsIgnored],
+    rulesExcluded: [...config.rulesExcluded, ...finalInputs.rulesExcluded],
+    queries: config.queries,
+  });
+
+  // Write to workspace root (or current directory if GITHUB_WORKSPACE not set)
+  const outputPath = process.env.GITHUB_WORKSPACE
+    ? path.join(process.env.GITHUB_WORKSPACE, 'codeql-config-generated.yml')
+    : 'codeql-config-generated.yml';
+
+  fs.writeFileSync(outputPath, output);
+}
+
+// Only run if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error('Error:', error);
+    process.exit(1);
+  });
+}
