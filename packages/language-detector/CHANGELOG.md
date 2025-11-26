@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.3]
 
-### Uncategorized
+### Added
 
-- chore: enable swift support ([#62](https://github.com/MetaMask/action-security-code-scanner/pull/62))
+- Enable Swift support ([#62](https://github.com/MetaMask/action-security-code-scanner/pull/62))
 
 ## [2.0.2]
 
