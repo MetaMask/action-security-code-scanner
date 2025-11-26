@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.3]
 
-### Uncategorized
+### Fixed
 
-- fix: fix incorect languge slection based on repo config ([#63](https://github.com/MetaMask/action-security-code-scanner/pull/63))
+- Fix incorrect language selection based on repo config ([#63](https://github.com/MetaMask/action-security-code-scanner/pull/63))
 
 ### Fixed
 
