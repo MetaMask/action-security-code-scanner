@@ -1,0 +1,113 @@
+name: 'Onboard New Repository with SAST'
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository to onboard (format: owner/repo)'
+        required: true
+        type: string
+      base_branch:
+        description: 'Base branch to create PR against'
+        required: false
+        default: 'main'
+        type: string
+  repository_dispatch:
+    types: [new_repository_created]
+
+jobs:
+  create-sast-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout scanner action repository
+        uses: actions/checkout@v4
+        with:
+          path: scanner-repo
+
+      - name: Determine target repository
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "repository=${{ github.event.client_payload.repository }}" >> $GITHUB_OUTPUT
+            echo "base_branch=${{ github.event.client_payload.base_branch || 'main' }}" >> $GITHUB_OUTPUT
+          else
+            echo "repository=${{ inputs.repository }}" >> $GITHUB_OUTPUT
+            echo "base_branch=${{ inputs.base_branch }}" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.target.outputs.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: target-repo
+          ref: ${{ steps.target.outputs.base_branch }}
+
+      - name: Create branch and add SAST workflow
+        working-directory: target-repo
+        run: |
+          git config user.name "MetaMask Security Bot"
+          git config user.email "security-bot@metamask.io"
+
+          BRANCH_NAME="security/add-sast-scanner"
+          git checkout -b "$BRANCH_NAME"
+
+          # Create .github/workflows directory if it doesn't exist
+          mkdir -p .github/workflows
+
+          # Copy the security scanner workflow template
+          cp ../scanner-repo/examples/security-code-scanner.yml .github/workflows/security-code-scanner.yml
+
+          git add .github/workflows/security-code-scanner.yml
+          git commit -m "chore: add MetaMask Security Code Scanner workflow
+
+This PR adds the MetaMask Security Code Scanner workflow to enable
+automated security scanning of the codebase.
+
+The scanner will run on:
+- Push to main branch
+- Pull requests to main branch
+- Manual workflow dispatch
+
+To configure the scanner for your repository's specific needs,
+please review the workflow file and adjust as necessary."
+
+          git push origin "$BRANCH_NAME"
+        shell: bash
+
+      - name: Create Pull Request
+        working-directory: target-repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ steps.target.outputs.repository }}
+        run: |
+          # Extract owner and repo name for URL construction
+          OWNER=$(echo "$REPO_NAME" | cut -d'/' -f1)
+          REPO=$(echo "$REPO_NAME" | cut -d'/' -f2)
+          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
+          SECURITY_URL="https://github.com/${OWNER}/${REPO}/security/code-scanning"
+
+          # Read PR body template and substitute variables
+          PR_BODY=$(cat ../scanner-repo/.github/templates/onboarding-pr-body-automated.md)
+          PR_BODY="${PR_BODY//\{\{SECURITY_SCANNING_URL\}\}/$SECURITY_URL}"
+
+          gh pr create \
+            --title "🔒 Add MetaMask Security Code Scanner" \
+            --body "$PR_BODY" \
+            --base "$BASE_BRANCH" \
+            --head "security/add-sast-scanner"
+        shell: bash
+
+      - name: Output PR URL
+        working-directory: target-repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URL=$(gh pr view security/add-sast-scanner --json url -q .url)
+          echo "✅ Pull Request created: $PR_URL"
+          echo "PR_URL=$PR_URL" >> $GITHUB_OUTPUT
+        shell: bash
