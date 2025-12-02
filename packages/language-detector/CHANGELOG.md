@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated language detector to remove Javascript as fallback default language
+
 ## [2.0.3]
 
 ### Added

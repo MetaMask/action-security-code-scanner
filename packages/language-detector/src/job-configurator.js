@@ -48,8 +48,8 @@ const DEFAULT_CONFIGS = {
  */
 export function detectLanguages(githubLanguages) {
   if (!githubLanguages || typeof githubLanguages !== 'object') {
-    console.warn('Invalid GitHub languages data, defaulting to javascript');
-    return ['javascript'];
+    console.warn('Invalid GitHub languages data');
+    return [];
   }
 
   const detectedLanguages = new Set();
@@ -64,8 +64,8 @@ export function detectLanguages(githubLanguages) {
   const languages = Array.from(detectedLanguages);
 
   if (languages.length === 0) {
-    console.warn('No supported languages detected, defaulting to javascript');
-    return ['javascript'];
+    console.warn('No supported languages detected');
+    return [];
   }
 
   return languages;
