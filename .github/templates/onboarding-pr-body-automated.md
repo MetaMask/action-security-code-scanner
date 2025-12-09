@@ -3,11 +3,13 @@
 **This PR may be auto-merged in the future if not configured.**
 
 If your team does not need the security scanner:
+
 1. **Add a comment on this PR** explaining why your team is opting out
 2. **Close this PR** to prevent auto-merge
 3. **Add a `.github/no-security-scanner` file** to your repository to prevent future onboarding attempts
 
 If you need the scanner but want to customize it:
+
 1. Complete the checklist below
 2. Review and modify the workflow file as needed
 3. Approve and merge this PR when ready
@@ -19,6 +21,7 @@ If no action is taken, this PR may be automatically merged after a grace period 
 ## Required Action
 
 Prior to merging this pull request, please ensure the following has been completed:
+
 - [ ] The lines specifying `branches` correctly specify this repository's default branch (usually `main` or `master`).
 - [ ] Any paths you would like to ignore have been added to the `paths-ignored` configuration option (see [setup](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md#setup))
 - [ ] Language configuration has been reviewed - ignore falsely detected languages or add build commands for Java/Kotlin if needed (see Configuration section below)
@@ -84,10 +87,12 @@ The scanner auto-detects languages in your repository. If you need to customize 
 For more configuration options, please review the tool's [README](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md).
 
 Optional secrets that can be configured:
+
 - `SECURITY_SCAN_METRICS_TOKEN` - for metrics collection
 - `APPSEC_BOT_SLACK_WEBHOOK` - for Slack notifications
 
 For any additional questions, please reach out to `@app-sec` in Slack.
 
 ---
-🤖 *This PR was automatically created by the MetaMask Security onboarding system*
+
+🤖 _This PR was automatically created by the MetaMask Security onboarding system_

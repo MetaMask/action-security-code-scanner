@@ -5,6 +5,7 @@ This directory contains templates for onboarding PRs that add the Security Code 
 ## Templates
 
 ### `onboarding-pr-body-manual.md`
+
 **Use for:** Manual PRs created by the security team
 
 - More detailed with full language configuration examples
@@ -13,6 +14,7 @@ This directory contains templates for onboarding PRs that add the Security Code 
 - No auto-merge disclaimer
 
 ### `onboarding-pr-body-automated.md`
+
 **Use for:** Automated PRs created by workflows
 
 - Shorter, more concise
@@ -29,6 +31,7 @@ Both templates support variable substitution:
 ## Usage
 
 **Manual PRs:**
+
 ```bash
 # Copy and paste from onboarding-pr-body-manual.md
 # Replace {{SECURITY_SCANNING_URL}} with actual URL

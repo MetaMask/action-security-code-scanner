@@ -33,17 +33,13 @@ jobs:
             ORG="${{ github.event.client_payload.organization }}"
             REPO_NAME="${{ github.event.client_payload.repository }}"
             REPO="$ORG/$REPO_NAME"
-            BASE_BRANCH="${{ github.event.client_payload.base_branch }}"
           else
             REPO="${{ inputs.organization }}/${{ inputs.repository }}"
-            BASE_BRANCH=""
           fi
 
-          # If base_branch is not set, detect it from the repository
-          if [ -z "$BASE_BRANCH" ]; then
-            echo "Detecting default branch for $REPO..."
-            BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch')
-          fi
+          # Auto-detect default branch from the repository
+          echo "Detecting default branch for $REPO..."
+          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch')
 
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
           echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
@@ -71,8 +67,11 @@ jobs:
           # Create .github/workflows directory if it doesn't exist
           mkdir -p .github/workflows
 
-          # Copy the security scanner workflow template
-          cp ../scanner-repo/examples/security-code-scanner.yml .github/workflows/security-code-scanner.yml
+          # Copy the security scanner workflow template and replace placeholders
+          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
+          sed "s/{ DEFAULT_BRANCH }/$BASE_BRANCH/g" \
+            ../scanner-repo/.github/templates/security-code-scanner.yml \
+            > .github/workflows/security-code-scanner.yml
 
           git add .github/workflows/security-code-scanner.yml
           git commit -m "chore: add MetaMask Security Code Scanner workflow

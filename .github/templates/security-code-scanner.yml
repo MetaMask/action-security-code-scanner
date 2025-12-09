@@ -3,10 +3,10 @@ name: MetaMask Security Code Scanner
 on:
   push:
     branches:
-      - main
+      - { DEFAULT_BRANCH }
   pull_request:
     branches:
-      - main
+      - { DEFAULT_BRANCH }
   workflow_call:
     secrets:
       SECURITY_SCAN_METRICS_TOKEN:
