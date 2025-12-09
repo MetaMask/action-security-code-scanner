@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated language detector to add Github Actions support by default
 
+### Fixed
+
+- Fix incorrect language selection based on repo config ([#63](https://github.com/MetaMask/action-security-code-scanner/pull/63))
+
 ## [2.0.1]
 
 ### Fixed
