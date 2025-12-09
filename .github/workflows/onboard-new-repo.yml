@@ -39,7 +39,13 @@ jobs:
 
           # Auto-detect default branch from the repository
           echo "Detecting default branch for $REPO..."
-          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch')
+          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>/dev/null || echo "")
+
+          # If repo is empty or API call failed, default to 'main'
+          if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+            echo "Repository is empty or default branch not found. Defaulting to 'main'"
+            BASE_BRANCH="main"
+          fi
 
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
           echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
