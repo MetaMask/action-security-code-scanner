@@ -49,13 +49,13 @@ jobs:
           echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
 
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.target.outputs.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ONBOARDING_TOKEN }}
           path: target-repo
           ref: ${{ steps.target.outputs.base_branch }}
 
@@ -94,7 +94,7 @@ jobs:
       - name: Create Pull Request
         working-directory: target-repo
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
           REPO_NAME: ${{ steps.target.outputs.repository }}
         run: |
           # Extract owner and repo name for URL construction
@@ -117,7 +117,7 @@ jobs:
       - name: Output PR URL
         working-directory: target-repo
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
         run: |
           PR_URL=$(gh pr view security/add-sast-scanner --json url -q .url)
           echo "✅ Pull Request created: $PR_URL"
