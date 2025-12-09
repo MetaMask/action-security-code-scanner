@@ -4,13 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       repository:
-        description: 'Repository to onboard (format: owner/repo)'
+        description: 'Repository to onboard (format: owner/repo, e.g., MetaMask/snaps)'
         required: true
-        type: string
-      base_branch:
-        description: 'Base branch to create PR against'
-        required: false
-        default: 'main'
         type: string
   repository_dispatch:
     types: [new_repository_created]
@@ -31,13 +26,24 @@ jobs:
         id: target
         run: |
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            echo "repository=${{ github.event.client_payload.repository }}" >> $GITHUB_OUTPUT
-            echo "base_branch=${{ github.event.client_payload.base_branch || 'main' }}" >> $GITHUB_OUTPUT
+            REPO="${{ github.event.client_payload.repository }}"
+            BASE_BRANCH="${{ github.event.client_payload.base_branch }}"
           else
-            echo "repository=${{ inputs.repository }}" >> $GITHUB_OUTPUT
-            echo "base_branch=${{ inputs.base_branch }}" >> $GITHUB_OUTPUT
+            REPO="${{ inputs.repository }}"
+            BASE_BRANCH=""
           fi
+
+          # If base_branch is not set, detect it from the repository
+          if [ -z "$BASE_BRANCH" ]; then
+            echo "Detecting default branch for $REPO..."
+            BASE_BRANCH=$(gh api repos/$REPO --jq '.default_branch')
+          fi
+
+          echo "repository=$REPO" >> $GITHUB_OUTPUT
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout target repository
         uses: actions/checkout@v4
@@ -65,16 +71,16 @@ jobs:
           git add .github/workflows/security-code-scanner.yml
           git commit -m "chore: add MetaMask Security Code Scanner workflow
 
-This PR adds the MetaMask Security Code Scanner workflow to enable
-automated security scanning of the codebase.
+          This PR adds the MetaMask Security Code Scanner workflow to enable
+          automated security scanning of the codebase.
 
-The scanner will run on:
-- Push to main branch
-- Pull requests to main branch
-- Manual workflow dispatch
+          The scanner will run on:
+          - Push to main branch
+          - Pull requests to main branch
+          - Manual workflow dispatch
 
-To configure the scanner for your repository's specific needs,
-please review the workflow file and adjust as necessary."
+          To configure the scanner for your repository's specific needs,
+          please review the workflow file and adjust as necessary."
 
           git push origin "$BRANCH_NAME"
         shell: bash

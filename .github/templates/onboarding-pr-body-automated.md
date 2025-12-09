@@ -3,14 +3,14 @@
 **This PR may be auto-merged in the future if not configured.**
 
 If your team does not need the security scanner:
-- **Add a comment on this PR** explaining why your team is opting out
-- **Close this PR** to prevent auto-merge
-- **Add a `.github/no-security-scanner` file** to your repository to prevent future onboarding attempts
+1. **Add a comment on this PR** explaining why your team is opting out
+2. **Close this PR** to prevent auto-merge
+3. **Add a `.github/no-security-scanner` file** to your repository to prevent future onboarding attempts
 
 If you need the scanner but want to customize it:
-- Complete the checklist below
-- Review and modify the workflow file as needed
-- Approve and merge this PR when ready
+1. Complete the checklist below
+2. Review and modify the workflow file as needed
+3. Approve and merge this PR when ready
 
 If no action is taken, this PR may be automatically merged after a grace period to ensure baseline security coverage across all repositories.
 
@@ -19,7 +19,7 @@ If no action is taken, this PR may be automatically merged after a grace period 
 ## Required Action
 
 Prior to merging this pull request, please ensure the following has been completed:
-- [ ] The lines specifying `branches` correctly specifies this repository's default branch (usually `main` or `master`).
+- [ ] The lines specifying `branches` correctly specify this repository's default branch (usually `main` or `master`).
 - [ ] Any paths you would like to ignore have been added to the `paths-ignored` configuration option (see [setup](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md#setup))
 - [ ] Language configuration has been reviewed - ignore falsely detected languages or add build commands for Java/Kotlin if needed (see Configuration section below)
 - [ ] Any existing CodeQL configuration has been disabled.
@@ -49,6 +49,7 @@ The scanner auto-detects languages in your repository. If you need to customize 
 **Common use cases:**
 
 1. **Ignore falsely detected languages:**
+
    ```yaml
    languages-config: |
      [
@@ -60,6 +61,7 @@ The scanner auto-detects languages in your repository. If you need to customize 
    ```
 
 2. **Configure Java/Kotlin builds:**
+
    ```yaml
    languages-config: |
      [
