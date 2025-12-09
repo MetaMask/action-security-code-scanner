@@ -53,7 +53,29 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
 
+      - name: Check if target repository is empty
+        id: check_empty
+        run: |
+          REPO="${{ steps.target.outputs.repository }}"
+          # Try to get repository info
+          REPO_INFO=$(gh api "repos/$REPO" 2>/dev/null || echo "")
+
+          if [ -z "$REPO_INFO" ]; then
+            echo "Failed to get repository info"
+            exit 1
+          fi
+
+          # Check if repository has commits (size will be 0 if empty)
+          IS_EMPTY=$(echo "$REPO_INFO" | jq -r '.size == 0')
+
+          echo "is_empty=$IS_EMPTY" >> "$GITHUB_OUTPUT"
+          echo "Repository empty status: $IS_EMPTY"
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+
       - name: Checkout target repository
+        if: steps.check_empty.outputs.is_empty == 'false'
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.target.outputs.repository }}
@@ -61,20 +83,37 @@ jobs:
           path: target-repo
           ref: ${{ steps.target.outputs.base_branch }}
 
+      - name: Initialize empty repository locally
+        if: steps.check_empty.outputs.is_empty == 'true'
+        run: |
+          mkdir -p target-repo
+          cd target-repo
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.ONBOARDING_TOKEN }}@github.com/${{ steps.target.outputs.repository }}.git"
+        shell: bash
+
       - name: Create branch and add SAST workflow
         working-directory: target-repo
         run: |
           git config user.name "MetaMask Security Bot"
           git config user.email "security-bot@metamask.io"
 
-          BRANCH_NAME="security/add-sast-scanner"
-          git checkout -b "$BRANCH_NAME"
+          IS_EMPTY="${{ steps.check_empty.outputs.is_empty }}"
+          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
+
+          if [ "$IS_EMPTY" = "true" ]; then
+            # For empty repos, create initial commit on main
+            BRANCH_NAME="$BASE_BRANCH"
+          else
+            # For existing repos, create a feature branch
+            BRANCH_NAME="security/add-sast-scanner"
+            git checkout -b "$BRANCH_NAME"
+          fi
 
           # Create .github/workflows directory if it doesn't exist
           mkdir -p .github/workflows
 
           # Copy the security scanner workflow template and replace placeholders
-          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
           sed "s/{ DEFAULT_BRANCH }/$BASE_BRANCH/g" \
             ../scanner-repo/.github/templates/security-code-scanner.yml \
             > .github/workflows/security-code-scanner.yml
@@ -86,17 +125,18 @@ jobs:
           automated security scanning of the codebase.
 
           The scanner will run on:
-          - Push to main branch
-          - Pull requests to main branch
+          - Push to $BASE_BRANCH branch
+          - Pull requests to $BASE_BRANCH branch
           - Manual workflow dispatch
 
           To configure the scanner for your repository's specific needs,
           please review the workflow file and adjust as necessary."
 
-          git push origin "$BRANCH_NAME"
+          git push -u origin "$BRANCH_NAME"
         shell: bash
 
       - name: Create Pull Request
+        if: steps.check_empty.outputs.is_empty == 'false'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -120,6 +160,7 @@ jobs:
         shell: bash
 
       - name: Output PR URL
+        if: steps.check_empty.outputs.is_empty == 'false'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -127,4 +168,13 @@ jobs:
           PR_URL=$(gh pr view security/add-sast-scanner --json url -q .url)
           echo "✅ Pull Request created: $PR_URL"
           echo "PR_URL=$PR_URL" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Output commit info for empty repo
+        if: steps.check_empty.outputs.is_empty == 'true'
+        run: |
+          REPO="${{ steps.target.outputs.repository }}"
+          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
+          echo "✅ Initial commit pushed to https://github.com/$REPO/tree/$BASE_BRANCH"
+          echo "Repository was empty - workflow file added directly to $BASE_BRANCH branch"
         shell: bash
