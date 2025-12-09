@@ -57,19 +57,19 @@ jobs:
         id: check_empty
         run: |
           REPO="${{ steps.target.outputs.repository }}"
-          # Try to get repository info
-          REPO_INFO=$(gh api "repos/$REPO" 2>/dev/null || echo "")
+          # Try to list branches in the repository
+          BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>/dev/null || echo "0")
 
-          if [ -z "$REPO_INFO" ]; then
-            echo "Failed to get repository info"
-            exit 1
+          # If there are no branches, the repo is empty
+          if [ "$BRANCHES" = "0" ]; then
+            IS_EMPTY="true"
+            echo "Repository is empty (no branches found)"
+          else
+            IS_EMPTY="false"
+            echo "Repository has $BRANCHES branch(es)"
           fi
 
-          # Check if repository has commits (size will be 0 if empty)
-          IS_EMPTY=$(echo "$REPO_INFO" | jq -r '.size == 0')
-
           echo "is_empty=$IS_EMPTY" >> "$GITHUB_OUTPUT"
-          echo "Repository empty status: $IS_EMPTY"
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
