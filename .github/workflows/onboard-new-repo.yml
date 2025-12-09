@@ -3,8 +3,12 @@ name: 'Onboard New Repository with SAST'
 on:
   workflow_dispatch:
     inputs:
+      organization:
+        description: 'Organization name (e.g., MetaMask)'
+        required: true
+        type: string
       repository:
-        description: 'Repository to onboard (format: owner/repo, e.g., MetaMask/snaps)'
+        description: 'Repository name (e.g., snaps)'
         required: true
         type: string
   repository_dispatch:
@@ -26,10 +30,12 @@ jobs:
         id: target
         run: |
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            REPO="${{ github.event.client_payload.repository }}"
+            ORG="${{ github.event.client_payload.organization }}"
+            REPO_NAME="${{ github.event.client_payload.repository }}"
+            REPO="$ORG/$REPO_NAME"
             BASE_BRANCH="${{ github.event.client_payload.base_branch }}"
           else
-            REPO="${{ inputs.repository }}"
+            REPO="${{ inputs.organization }}/${{ inputs.repository }}"
             BASE_BRANCH=""
           fi
 
