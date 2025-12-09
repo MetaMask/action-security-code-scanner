@@ -132,6 +132,11 @@ jobs:
           To configure the scanner for your repository's specific needs,
           please review the workflow file and adjust as necessary."
 
+          # For empty repos, rename the branch to match the base branch
+          if [ "$IS_EMPTY" = "true" ]; then
+            git branch -M "$BRANCH_NAME"
+          fi
+
           git push -u origin "$BRANCH_NAME"
         shell: bash
 
