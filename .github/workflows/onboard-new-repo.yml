@@ -42,11 +42,11 @@ jobs:
           # If base_branch is not set, detect it from the repository
           if [ -z "$BASE_BRANCH" ]; then
             echo "Detecting default branch for $REPO..."
-            BASE_BRANCH=$(gh api repos/$REPO --jq '.default_branch')
+            BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch')
           fi
 
-          echo "repository=$REPO" >> $GITHUB_OUTPUT
-          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "repository=$REPO" >> "$GITHUB_OUTPUT"
+          echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -121,5 +121,5 @@ jobs:
         run: |
           PR_URL=$(gh pr view security/add-sast-scanner --json url -q .url)
           echo "✅ Pull Request created: $PR_URL"
-          echo "PR_URL=$PR_URL" >> $GITHUB_OUTPUT
+          echo "PR_URL=$PR_URL" >> "$GITHUB_OUTPUT"
         shell: bash
