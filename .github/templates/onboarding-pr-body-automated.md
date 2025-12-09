@@ -3,8 +3,9 @@
 **This PR may be auto-merged in the future if not configured.**
 
 If your team does not need the security scanner:
-- Please **close this PR** and add a comment explaining why
-- Consider adding a `.github/no-security-scanner` file to opt-out permanently
+- **Add a comment on this PR** explaining why your team is opting out
+- **Close this PR** to prevent auto-merge
+- **Add a `.github/no-security-scanner` file** to your repository to prevent future onboarding attempts
 
 If you need the scanner but want to customize it:
 - Complete the checklist below
@@ -41,11 +42,50 @@ The finding will automatically be dismissed by pushing a commit that fixes the i
 
 ## Configuration
 
-The scanner auto-detects languages in your repository. If you need to customize settings (ignore falsely detected languages, add Java/Kotlin build commands), please review the `languages-config` section in the workflow file.
+### Language Configuration
 
-For detailed configuration examples and options, please review the tool's [README](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md).
+The scanner auto-detects languages in your repository. If you need to customize language-specific settings, you can modify the `languages-config` section in the workflow file.
 
-For any questions, please reach out to `@app-sec` in Slack.
+**Common use cases:**
+
+1. **Ignore falsely detected languages:**
+   ```yaml
+   languages-config: |
+     [
+       {
+         "language": "ruby",
+         "ignore": true
+       }
+     ]
+   ```
+
+2. **Configure Java/Kotlin builds:**
+   ```yaml
+   languages-config: |
+     [
+       {
+         "language": "java-kotlin",
+         "build_mode": "manual",
+         "build_command": "./gradlew build",
+         "version": "21",
+         "distribution": "temurin"
+       }
+     ]
+   ```
+
+**Supported languages:** `javascript-typescript`, `python`, `java-kotlin`, `go`, `cpp`, `csharp`, `ruby`
+
+**Build modes:** `none`, `autobuild`, `manual`
+
+### Additional Configuration
+
+For more configuration options, please review the tool's [README](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md).
+
+Optional secrets that can be configured:
+- `SECURITY_SCAN_METRICS_TOKEN` - for metrics collection
+- `APPSEC_BOT_SLACK_WEBHOOK` - for Slack notifications
+
+For any additional questions, please reach out to `@app-sec` in Slack.
 
 ---
 🤖 *This PR was automatically created by the MetaMask Security onboarding system*
