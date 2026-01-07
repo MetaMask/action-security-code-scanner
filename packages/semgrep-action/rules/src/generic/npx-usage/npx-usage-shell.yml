@@ -6,7 +6,7 @@ rules:
     severity: WARNING
     metadata:
       tags: [security]
-      shortDescription: 'npx usage introduces supply chain security risks'
+      shortDescription: "npx usage introduces supply chain security risks"
       confidence: HIGH
       help: |
         Using npx to install and run packages introduces significant supply chain security risks for the following reasons:
@@ -18,8 +18,8 @@ rules:
 
         ### Recommended practice
         - Add packages as dependencies or devDependencies in `package.json`.  
-        - Use your package manager to install and execute them (e.g., `yarn add <package> --dev` followed by `yarn <package> <command>`).
-
+        - Use your package manager to install and execute them (e.g., `yarn add <package> --dev` followed by `yarn <package> <command>`).  
+        
     message: >-
       Avoid using 'npx' to run packages due to supply chain security risks. Instead, install the package 
       as a dependency / devDependency and invoke it using your package manager to ensure version pinning 
