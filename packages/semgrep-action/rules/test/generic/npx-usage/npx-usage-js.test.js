@@ -21,14 +21,14 @@ function lintCode() {
 function throwError() {
   throw new Error(
     // ruleid: npx-usage-js
-    'Please specify a project name with --project flag. Example: npx playwright test --project dummy-test-local'
+    'Please specify a project name with --project flag. Example: npx playwright test --project dummy-test-local',
   );
 }
 
 // String literal with scoped package
 function formatCode() {
   // ruleid: npx-usage-js
-  const command = "npx @typescript-eslint/parser --version";
+  const command = 'npx @typescript-eslint/parser --version';
   exec(command);
 }
 
@@ -61,7 +61,7 @@ function buildAndTest() {
 // String literal assigned to variable
 function assignCommand() {
   // ruleid: npx-usage-js
-  let cmd = "npx prettier --write .";
+  let cmd = 'npx prettier --write .';
   return cmd;
 }
 
@@ -103,6 +103,6 @@ function withComment() {
 function variableName() {
   // ok: npx-usage-js
   const shouldUseNpx = false;
-  const npxWarning = "Dont use npx!";
+  const npxWarning = 'Dont use npx!';
   console.log(npxWarning);
 }

@@ -14,7 +14,7 @@ function runPlaywrightTests(): void {
 function throwConfigError(): never {
   throw new Error(
     // ruleid: npx-usage-js
-    'Please specify a project name with --project flag. Example: npx playwright test --project dummy-test-local'
+    'Please specify a project name with --project flag. Example: npx playwright test --project dummy-test-local',
   );
 }
 
@@ -33,7 +33,7 @@ async function deployApp(): Promise<void> {
 // String literal with type assertion
 function formatFiles(): void {
   // ruleid: npx-usage-js
-  const cmd = "npx prettier --write ." as const;
+  const cmd = 'npx prettier --write .' as const;
   execSync(cmd);
 }
 

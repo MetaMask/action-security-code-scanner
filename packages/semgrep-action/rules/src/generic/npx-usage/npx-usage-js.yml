@@ -6,7 +6,7 @@ rules:
     severity: WARNING
     metadata:
       tags: [security]
-      shortDescription: "npx usage introduces supply chain security risks"
+      shortDescription: 'npx usage introduces supply chain security risks'
       confidence: HIGH
       help: |
         Using npx to install and run packages introduces significant supply chain security risks for the following reasons:
@@ -37,7 +37,7 @@ rules:
       as a dependency / devDependency and invoke it using your package manager to ensure version pinning
       and reproducibility.
     patterns:
-      - pattern: "$STRING"
+      - pattern: '$STRING'
       - metavariable-regex:
           metavariable: $STRING
           regex: '.*\bnpx\s'
