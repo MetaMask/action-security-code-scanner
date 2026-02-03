@@ -1,0 +1,87 @@
+name: Test Workflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Test basic npx usage in GitHub Actions - should be flagged
+      - name: Run tests
+        # ruleid: npx-usage-yml
+        run: npx jest --coverage
+
+      - name: Lint code
+        # ruleid: npx-usage-yml
+        run: npx eslint src/
+
+      - name: Format code
+        # ruleid: npx-usage-yml
+        run: npx prettier --write .
+
+      - name: Create app
+        # ruleid: npx-usage-yml
+        run: npx create-react-app my-app
+
+      - name: Setup tool with flag
+        # ruleid: npx-usage-yml
+        run: npx --yes setup-tool --config config.json
+
+      - name: Run with env vars
+        # ruleid: npx-usage-yml
+        run: npx jest ${GITHUB_WORKSPACE} --coverage
+
+      # Test scoped package with output redirection - should be flagged
+      - name: Generate fingerprint
+        # ruleid: npx-usage-yml
+        run: npx @expo/fingerprint ./ > fingerprint-pr.json
+
+      - name: Another scoped package
+        # ruleid: npx-usage-yml
+        run: npx @typescript-eslint/parser --version
+
+      # Test npx in middle of command strings - should be flagged
+      - name: Install and test
+        # ruleid: npx-usage-yml
+        run: yarn install && npx jest --coverage
+
+      - name: Setup and lint
+        # ruleid: npx-usage-yml
+        run: echo "Setting up" && npx eslint src/
+
+      - name: Build and format
+        # ruleid: npx-usage-yml
+        run: npm run build && npx prettier --write .
+
+      # Test good alternatives - should not be flagged
+      - name: Run tests with yarn
+        # ok: npx-usage-yml
+        run: yarn jest --coverage
+
+      - name: Lint code with yarn
+        # ok: npx-usage-yml
+        run: yarn eslint src/
+
+      - name: Format code with yarn
+        # ok: npx-usage-yml
+        run: yarn prettier --write .
+
+      - name: Create app with yarn dlx
+        # ok: npx-usage-yml
+        run: yarn dlx create-react-app my-app
+
+      - name: Build with npm script
+        # ok: npx-usage-yml
+        run: npm run build
+
+      - name: Description mentions npx but doesn't use it
+        # ok: npx-usage-yml
+        run: echo "This workflow mentions npx but doesn't execute it"
+
+      - name: Just npm (not npx)
+        # ok: npx-usage-yml
+        run: npm install
