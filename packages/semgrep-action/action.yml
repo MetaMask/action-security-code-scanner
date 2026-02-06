@@ -25,7 +25,8 @@ runs:
 
     - name: Generate .semgrepignore
       run: |
-        echo "${{ inputs.paths_ignored }}" > .semgrepignore
+        echo ".security-scanner/" > .semgrepignore
+        echo "${{ inputs.paths_ignored }}" >> .semgrepignore
         cat .semgrepignore
       shell: bash
 
