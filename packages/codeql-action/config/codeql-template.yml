@@ -1,6 +1,7 @@
 name: "Security Code Scanner CodeQL Config"
 
 paths-ignore:
+  - ".security-scanner/"
 <% pathsIgnored.forEach(function(path) { -%>
   - "<%- path %>"
 <% }); -%>
