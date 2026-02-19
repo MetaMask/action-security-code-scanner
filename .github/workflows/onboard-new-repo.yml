@@ -29,13 +29,35 @@ jobs:
       - name: Determine target repository
         id: target
         run: |
-          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            ORG="${{ github.event.client_payload.organization }}"
-            REPO_NAME="${{ github.event.client_payload.repository }}"
-            REPO="$ORG/$REPO_NAME"
+          validate_name() {
+            local value="$1"
+            local label="$2"
+            local max_len="$3"
+            if [ -z "$value" ]; then
+              echo "::error::$label is empty"
+              exit 1
+            fi
+            if [ "${#value}" -gt "$max_len" ]; then
+              echo "::error::$label exceeds maximum length of $max_len characters"
+              exit 1
+            fi
+            if ! echo "$value" | grep -qE '^[a-zA-Z0-9._-]+$'; then
+              echo "::error::$label contains invalid characters (only alphanumeric, dots, hyphens, and underscores are allowed)"
+              exit 1
+            fi
+          }
+
+          if [ "$EVENT_NAME" = "repository_dispatch" ]; then
+            ORG="$EVENT_ORG"
+            REPO_NAME="$EVENT_REPO"
           else
-            REPO="${{ inputs.organization }}/${{ inputs.repository }}"
+            ORG="$INPUT_ORG"
+            REPO_NAME="$INPUT_REPO"
           fi
+
+          validate_name "$ORG" "Organization" 39
+          validate_name "$REPO_NAME" "Repository" 100
+          REPO="$ORG/$REPO_NAME"
 
           # Auto-detect default branch from the repository
           echo "Detecting default branch for $REPO..."
@@ -52,8 +74,36 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ORG: ${{ github.event.client_payload.organization }}
+          EVENT_REPO: ${{ github.event.client_payload.repository }}
+          INPUT_ORG: ${{ inputs.organization }}
+          INPUT_REPO: ${{ inputs.repository }}
+
+      - name: Check for opt-out file
+        id: check_opt_out
+        run: |
+          REPO="${{ steps.target.outputs.repository }}"
+          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
+          HTTP_CODE=$(gh api "repos/$REPO/contents/.github/no-security-scanner?ref=$BASE_BRANCH" \
+            --silent --include 2>&1 | head -1 | grep -oE '[0-9]{3}' || echo "000")
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "Repository has opted out via .github/no-security-scanner"
+            echo "opted_out=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "opted_out=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+
+      - name: Skip onboarding (repository opted out)
+        if: steps.check_opt_out.outputs.opted_out == 'true'
+        run: |
+          echo "::notice::Skipping onboarding — repository ${{ steps.target.outputs.repository }} has a .github/no-security-scanner opt-out file"
 
       - name: Check if target repository is empty
+        if: steps.check_opt_out.outputs.opted_out != 'true'
         id: check_empty
         run: |
           REPO="${{ steps.target.outputs.repository }}"
@@ -75,7 +125,7 @@ jobs:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
 
       - name: Checkout target repository
-        if: steps.check_empty.outputs.is_empty == 'false'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.target.outputs.repository }}
@@ -84,7 +134,7 @@ jobs:
           ref: ${{ steps.target.outputs.base_branch }}
 
       - name: Initialize empty repository locally
-        if: steps.check_empty.outputs.is_empty == 'true'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true'
         run: |
           mkdir -p target-repo
           cd target-repo
@@ -93,6 +143,7 @@ jobs:
         shell: bash
 
       - name: Create branch and add SAST workflow
+        if: steps.check_opt_out.outputs.opted_out != 'true'
         working-directory: target-repo
         run: |
           git config user.name "MetaMask Security Bot"
@@ -114,7 +165,7 @@ jobs:
           mkdir -p .github/workflows
 
           # Copy the security scanner workflow template and replace placeholders
-          sed "s/{ DEFAULT_BRANCH }/$BASE_BRANCH/g" \
+          sed "s|{ DEFAULT_BRANCH }|$BASE_BRANCH|g" \
             ../scanner-repo/.github/templates/security-code-scanner.yml \
             > .github/workflows/security-code-scanner.yml
 
@@ -141,7 +192,7 @@ jobs:
         shell: bash
 
       - name: Create Pull Request
-        if: steps.check_empty.outputs.is_empty == 'false'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -165,7 +216,7 @@ jobs:
         shell: bash
 
       - name: Output PR URL
-        if: steps.check_empty.outputs.is_empty == 'false'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -176,7 +227,7 @@ jobs:
         shell: bash
 
       - name: Output commit info for empty repo
-        if: steps.check_empty.outputs.is_empty == 'true'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true'
         run: |
           REPO="${{ steps.target.outputs.repository }}"
           BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
