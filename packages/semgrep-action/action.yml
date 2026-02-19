@@ -16,9 +16,11 @@ runs:
       shell: bash
 
     - name: Generate .semgrepignore
+      env:
+        PATHS_IGNORED: ${{ inputs.paths_ignored }}
       run: |
         echo ".security-scanner/" > .semgrepignore
-        echo "${{ inputs.paths_ignored }}" >> .semgrepignore
+        echo "$PATHS_IGNORED" >> .semgrepignore
         cat .semgrepignore
       shell: bash
 
