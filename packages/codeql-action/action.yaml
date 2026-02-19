@@ -31,16 +31,25 @@ runs:
   using: 'composite'
   steps:
     - name: Debug CodeQL Action Inputs
+      env:
+        INPUT_REPO: ${{ inputs.repo }}
+        INPUT_LANGUAGE: ${{ inputs.language }}
+        INPUT_BUILD_MODE: ${{ inputs.build_mode }}
+        INPUT_BUILD_COMMAND: ${{ inputs.build_command }}
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_DISTRIBUTION: ${{ inputs.distribution }}
+        INPUT_PATHS_IGNORED: ${{ inputs.paths_ignored }}
+        INPUT_RULES_EXCLUDED: ${{ inputs.rules_excluded }}
       run: |
         echo "=================== CODEQL ACTION INPUT DEBUG ==================="
-        echo "Repository: ${{ inputs.repo }}"
-        echo "Language: ${{ inputs.language }}"
-        echo "Build mode: ${{ inputs.build_mode }}"
-        echo "Build command: ${{ inputs.build_command }}"
-        echo "Version: ${{ inputs.version }}"
-        echo "Distribution: ${{ inputs.distribution }}"
-        echo "Paths ignored: ${{ inputs.paths_ignored }}"
-        echo "Rules excluded: ${{ inputs.rules_excluded }}"
+        echo "Repository: $INPUT_REPO"
+        echo "Language: $INPUT_LANGUAGE"
+        echo "Build mode: $INPUT_BUILD_MODE"
+        echo "Build command: $INPUT_BUILD_COMMAND"
+        echo "Version: $INPUT_VERSION"
+        echo "Distribution: $INPUT_DISTRIBUTION"
+        echo "Paths ignored: $INPUT_PATHS_IGNORED"
+        echo "Rules excluded: $INPUT_RULES_EXCLUDED"
         echo "=================================================================="
       shell: bash
 
@@ -75,17 +84,24 @@ runs:
         RULES_EXCLUDED: ${{ inputs.rules_excluded}}
 
     - name: Debug Config Generation Outputs
+      env:
+        CONFIG_LANGUAGES: ${{ steps.generate-config.outputs.languages }}
+        CONFIG_BUILD_MODE: ${{ steps.generate-config.outputs.build_mode }}
+        CONFIG_BUILD_COMMAND: ${{ steps.generate-config.outputs.build_command }}
+        CONFIG_VERSION: ${{ steps.generate-config.outputs.version }}
+        CONFIG_DISTRIBUTION: ${{ steps.generate-config.outputs.distribution }}
+        WORKSPACE: ${{ github.workspace }}
       run: |
         echo "================= CONFIG GENERATION OUTPUTS ================="
-        echo "Languages: ${{ steps.generate-config.outputs.languages }}"
-        echo "Build mode: ${{ steps.generate-config.outputs.build_mode }}"
-        echo "Build command: ${{ steps.generate-config.outputs.build_command }}"
-        echo "Version: ${{ steps.generate-config.outputs.version }}"
-        echo "Distribution: ${{ steps.generate-config.outputs.distribution }}"
+        echo "Languages: $CONFIG_LANGUAGES"
+        echo "Build mode: $CONFIG_BUILD_MODE"
+        echo "Build command: $CONFIG_BUILD_COMMAND"
+        echo "Version: $CONFIG_VERSION"
+        echo "Distribution: $CONFIG_DISTRIBUTION"
         echo "=============================================================="
         echo ""
         echo "================= GENERATED CODEQL CONFIG FILE ================="
-        cat ${{ github.workspace }}/codeql-config-generated.yml
+        cat "$WORKSPACE/codeql-config-generated.yml"
         echo "=================================================================="
       shell: bash
 
@@ -114,10 +130,14 @@ runs:
 
     - name: Build code
       if: ${{ steps.generate-config.outputs.build_mode == 'manual' && steps.generate-config.outputs.build_command != '' }}
+      env:
+        BUILD_COMMAND: ${{ steps.generate-config.outputs.build_command }}
+        WORKSPACE: ${{ github.workspace }}
+        REPO: ${{ inputs.repo }}
       run: |
-        echo "Building code with command: ${{ steps.generate-config.outputs.build_command }}"
-        cd ${{ github.workspace }}/${{ inputs.repo }}
-        ${{ steps.generate-config.outputs.build_command }}
+        echo "Building code with command: $BUILD_COMMAND"
+        cd "$WORKSPACE/$REPO"
+        eval "$BUILD_COMMAND"
       shell: bash
 
     - name: Run CodeQL Analysis
