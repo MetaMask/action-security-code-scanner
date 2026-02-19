@@ -61,7 +61,7 @@ jobs:
 
           # Auto-detect default branch from the repository
           echo "Detecting default branch for $REPO..."
-          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>/dev/null || echo "")
+          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>/dev/null) || BASE_BRANCH=""
 
           # If repo is empty or API call failed, default to 'main'
           if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
@@ -85,9 +85,7 @@ jobs:
         run: |
           REPO="${{ steps.target.outputs.repository }}"
           BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
-          HTTP_CODE=$(gh api "repos/$REPO/contents/.github/no-security-scanner?ref=$BASE_BRANCH" \
-            --silent --include 2>&1 | head -1 | grep -oE '[0-9]{3}' || echo "000")
-          if [ "$HTTP_CODE" = "200" ]; then
+          if gh api "repos/$REPO/contents/.github/no-security-scanner?ref=$BASE_BRANCH" > /dev/null 2>&1; then
             echo "Repository has opted out via .github/no-security-scanner"
             echo "opted_out=true" >> "$GITHUB_OUTPUT"
           else
@@ -108,7 +106,7 @@ jobs:
         run: |
           REPO="${{ steps.target.outputs.repository }}"
           # Try to list branches in the repository
-          BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>/dev/null || echo "0")
+          BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>/dev/null) || BRANCHES="0"
 
           # If there are no branches, the repo is empty
           if [ "$BRANCHES" = "0" ]; then
