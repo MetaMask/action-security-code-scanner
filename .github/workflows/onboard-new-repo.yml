@@ -17,6 +17,7 @@ on:
 jobs:
   create-sast-pr:
     runs-on: ubuntu-latest
+    environment: onboarding
     permissions:
       contents: write
       pull-requests: write
