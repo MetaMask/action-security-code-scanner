@@ -86,11 +86,6 @@ The scanner auto-detects languages in your repository. If you need to customize 
 
 For more configuration options, please review the tool's [README](https://github.com/MetaMask/action-security-code-scanner/blob/main/README.md).
 
-Optional secrets that can be configured:
-
-- `SECURITY_SCAN_METRICS_TOKEN` - for metrics collection
-- `APPSEC_BOT_SLACK_WEBHOOK` - for Slack notifications
-
 For any additional questions, please reach out to `@app-sec` in Slack.
 
 ---
