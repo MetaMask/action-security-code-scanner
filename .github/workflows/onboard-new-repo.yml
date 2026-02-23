@@ -112,10 +112,16 @@ jobs:
         if: steps.check_opt_out.outputs.opted_out != 'true'
         id: check_empty
         run: |
-          # Try to list branches in the repository
-          BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>/dev/null) || BRANCHES="0"
+          if ! BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>&1); then
+            echo "::error::GitHub API call failed while listing branches for $REPO: $BRANCHES"
+            exit 1
+          fi
 
-          # If there are no branches, the repo is empty
+          if ! echo "$BRANCHES" | grep -qE '^[0-9]+$'; then
+            echo "::error::Unexpected API response when listing branches for $REPO: $BRANCHES"
+            exit 1
+          fi
+
           if [ "$BRANCHES" = "0" ]; then
             IS_EMPTY="true"
             echo "Repository is empty (no branches found)"
