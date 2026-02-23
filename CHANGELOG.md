@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.5]
+
+### Added
+
+- feat: add rule to catch npx usage in JS/TS/YAML
+
+### Fixed
+
+- fix: add .security-scanner directory to ignored paths
+
 ## [2.0.4]
 
 ### Changed
@@ -62,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of this action ([#29](https://github.com/MetaMask/action-security-code-scanner/pull/29))
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.4...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.5...HEAD
+[2.0.5]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...v2.0.2

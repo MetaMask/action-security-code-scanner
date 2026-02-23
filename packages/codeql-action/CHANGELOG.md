@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.5]
+
+### Fixed
+
+- fix: add .security-scanner directory to paths-ignore in CodeQL config
+
 ## [2.0.3]
 
 ### Fixed
 
 - Fix incorrect language selection based on repo config ([#63](https://github.com/MetaMask/action-security-code-scanner/pull/63))
-
-### Fixed
-
 - Fixed Codeql configuration build
 
 ## [2.0.1]
@@ -32,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added multi language support
 - Updated CodeQL action to v4
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.5...HEAD
+[2.0.5]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.3...v2.0.5
 [2.0.3]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...v2.0.3
 [2.0.1]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.0.0

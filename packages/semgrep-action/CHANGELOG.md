@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.5]
+
+### Fixed
+
+- refactor: simplify Semgrep action by removing unnecessary file copy step
+- fix: update .semgrepignore to include .security-scanner directory
+
+### Added
+
+- feat: add rule to catch npx usage in JS/TS/YAML
+
 ## [2.0.2]
 
 ## [2.0.1]
@@ -22,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrated action from its separate repository to the monorepo
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.5...HEAD
+[2.0.5]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.2...v2.0.5
 [2.0.2]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.0.0
