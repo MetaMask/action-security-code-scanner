@@ -70,6 +70,11 @@ jobs:
             BASE_BRANCH="main"
           fi
 
+          if ! echo "$BASE_BRANCH" | grep -qE '^[a-zA-Z0-9._/-]+$'; then
+            echo "::error::Branch name contains invalid characters (only alphanumeric, dots, hyphens, slashes, and underscores are allowed)"
+            exit 1
+          fi
+
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
           echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
         shell: bash
@@ -84,8 +89,6 @@ jobs:
       - name: Check for opt-out file
         id: check_opt_out
         run: |
-          REPO="${{ steps.target.outputs.repository }}"
-          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
           if gh api "repos/$REPO/contents/.github/no-security-scanner?ref=$BASE_BRANCH" > /dev/null 2>&1; then
             echo "Repository has opted out via .github/no-security-scanner"
             echo "opted_out=true" >> "$GITHUB_OUTPUT"
@@ -95,17 +98,20 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          REPO: ${{ steps.target.outputs.repository }}
+          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
 
       - name: Skip onboarding (repository opted out)
         if: steps.check_opt_out.outputs.opted_out == 'true'
         run: |
-          echo "::notice::Skipping onboarding — repository ${{ steps.target.outputs.repository }} has a .github/no-security-scanner opt-out file"
+          echo "::notice::Skipping onboarding — repository $REPO has a .github/no-security-scanner opt-out file"
+        env:
+          REPO: ${{ steps.target.outputs.repository }}
 
       - name: Check if target repository is empty
         if: steps.check_opt_out.outputs.opted_out != 'true'
         id: check_empty
         run: |
-          REPO="${{ steps.target.outputs.repository }}"
           # Try to list branches in the repository
           BRANCHES=$(gh api "repos/$REPO/branches" --jq 'length' 2>/dev/null) || BRANCHES="0"
 
@@ -122,6 +128,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          REPO: ${{ steps.target.outputs.repository }}
 
       - name: Checkout target repository
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
@@ -138,18 +145,21 @@ jobs:
           mkdir -p target-repo
           cd target-repo
           git init
-          git remote add origin "https://x-access-token:${{ secrets.ONBOARDING_TOKEN }}@github.com/${{ steps.target.outputs.repository }}.git"
+          git remote add origin "https://x-access-token:${ONBOARDING_TOKEN}@github.com/${REPO}.git"
         shell: bash
+        env:
+          ONBOARDING_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          REPO: ${{ steps.target.outputs.repository }}
 
       - name: Create branch and add SAST workflow
         if: steps.check_opt_out.outputs.opted_out != 'true'
         working-directory: target-repo
+        env:
+          IS_EMPTY: ${{ steps.check_empty.outputs.is_empty }}
+          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
         run: |
           git config user.name "MetaMask Security Bot"
           git config user.email "security-bot@metamask.io"
-
-          IS_EMPTY="${{ steps.check_empty.outputs.is_empty }}"
-          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
 
           if [ "$IS_EMPTY" = "true" ]; then
             # For empty repos, create initial commit on main
@@ -196,11 +206,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
           REPO_NAME: ${{ steps.target.outputs.repository }}
+          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
         run: |
           # Extract owner and repo name for URL construction
           OWNER=$(echo "$REPO_NAME" | cut -d'/' -f1)
           REPO=$(echo "$REPO_NAME" | cut -d'/' -f2)
-          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
           SECURITY_URL="https://github.com/${OWNER}/${REPO}/security/code-scanning"
 
           # Read PR body template and substitute variables
@@ -228,8 +238,9 @@ jobs:
       - name: Output commit info for empty repo
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true'
         run: |
-          REPO="${{ steps.target.outputs.repository }}"
-          BASE_BRANCH="${{ steps.target.outputs.base_branch }}"
           echo "✅ Initial commit pushed to https://github.com/$REPO/tree/$BASE_BRANCH"
           echo "Repository was empty - workflow file added directly to $BASE_BRANCH branch"
         shell: bash
+        env:
+          REPO: ${{ steps.target.outputs.repository }}
+          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
