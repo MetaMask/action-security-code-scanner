@@ -258,7 +258,7 @@ jobs:
           BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
 
       - name: Post to Slack channel on failure
-        if: ${{ failure() && secrets.APPSEC_BOT_SLACK_WEBHOOK != '' }}
+        if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844
         with:
           payload: |
