@@ -263,8 +263,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "Onboarding failed for ${{ steps.target.outputs.repository }} - Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "channel": "#security-notifications"
+              "text": "Onboarding failed for ${{ steps.target.outputs.repository }} - Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
