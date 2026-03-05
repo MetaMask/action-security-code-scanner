@@ -158,6 +158,7 @@ jobs:
           REPO: ${{ steps.target.outputs.repository }}
 
       - name: Create branch and add SAST workflow
+        id: create_branch
         if: steps.check_opt_out.outputs.opted_out != 'true'
         working-directory: target-repo
         env:
@@ -176,15 +177,20 @@ jobs:
             git checkout -b "$BRANCH_NAME"
           fi
 
-          # Create .github/workflows directory if it doesn't exist
           mkdir -p .github/workflows
 
-          # Copy the security scanner workflow template and replace placeholders
           sed "s|{ DEFAULT_BRANCH }|$BASE_BRANCH|g" \
             ../scanner-repo/.github/templates/security-code-scanner.yml \
             > .github/workflows/security-code-scanner.yml
 
           git add .github/workflows/security-code-scanner.yml
+
+          if git diff --cached --quiet; then
+            echo "::notice::Workflow file already exists and matches — nothing to commit"
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           git commit -m "chore: add MetaMask Security Code Scanner workflow
 
           This PR adds the MetaMask Security Code Scanner workflow to enable
@@ -198,16 +204,16 @@ jobs:
           To configure the scanner for your repository's specific needs,
           please review the workflow file and adjust as necessary."
 
-          # For empty repos, rename the branch to match the base branch
           if [ "$IS_EMPTY" = "true" ]; then
             git branch -M "$BRANCH_NAME"
           fi
 
           git push -u origin "$BRANCH_NAME"
+          echo "skipped=false" >> "$GITHUB_OUTPUT"
         shell: bash
 
       - name: Create Pull Request
-        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false' && steps.create_branch.outputs.skipped != 'true'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -231,7 +237,7 @@ jobs:
         shell: bash
 
       - name: Output PR URL
-        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false' && steps.create_branch.outputs.skipped != 'true'
         working-directory: target-repo
         env:
           GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
@@ -242,7 +248,7 @@ jobs:
         shell: bash
 
       - name: Output commit info for empty repo
-        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true'
+        if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true' && steps.create_branch.outputs.skipped != 'true'
         run: |
           echo "✅ Initial commit pushed to https://github.com/$REPO/tree/$BASE_BRANCH"
           echo "Repository was empty - workflow file added directly to $BASE_BRANCH branch"
@@ -250,3 +256,15 @@ jobs:
         env:
           REPO: ${{ steps.target.outputs.repository }}
           BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
+
+      - name: Post to Slack channel on failure
+        if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
+        uses: slackapi/slack-github-action@007b2c3c751a190b6f0f040e47ed024deaa72844
+        with:
+          payload: |
+            {
+              "text": "Onboarding failed for ${{ steps.target.outputs.repository }} - Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
