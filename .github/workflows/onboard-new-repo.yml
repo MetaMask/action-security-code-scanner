@@ -58,9 +58,11 @@ jobs:
           validate_name "$ORG" "Organization" 39
           validate_name "$REPO_NAME" "Repository" 100
 
-          echo "organization=$ORG" >> "$GITHUB_OUTPUT"
-          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
-          echo "repository=$ORG/$REPO_NAME" >> "$GITHUB_OUTPUT"
+          {
+            echo "organization=$ORG"
+            echo "repo_name=$REPO_NAME"
+            echo "repository=$ORG/$REPO_NAME"
+          } >> "$GITHUB_OUTPUT"
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
