@@ -19,15 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: onboarding
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     steps:
       - name: Checkout scanner action repository
         uses: actions/checkout@v4
         with:
           path: scanner-repo
 
-      - name: Determine target repository
+      - name: Parse target repository inputs
         id: target
         run: |
           validate_name() {
@@ -58,13 +57,33 @@ jobs:
 
           validate_name "$ORG" "Organization" 39
           validate_name "$REPO_NAME" "Repository" 100
-          REPO="$ORG/$REPO_NAME"
 
-          # Auto-detect default branch from the repository
+          echo "organization=$ORG" >> "$GITHUB_OUTPUT"
+          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
+          echo "repository=$ORG/$REPO_NAME" >> "$GITHUB_OUTPUT"
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ORG: ${{ github.event.client_payload.organization }}
+          EVENT_REPO: ${{ github.event.client_payload.repository }}
+          INPUT_ORG: ${{ inputs.organization }}
+          INPUT_REPO: ${{ inputs.repository }}
+
+      - name: Generate GitHub App token
+        id: app_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.ONBOARDING_APP_ID }}
+          private-key: ${{ secrets.ONBOARDING_APP_PRIVATE_KEY }}
+          owner: ${{ steps.target.outputs.organization }}
+          repositories: ${{ steps.target.outputs.repo_name }}
+
+      - name: Detect default branch
+        id: detect_branch
+        run: |
           echo "Detecting default branch for $REPO..."
           BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>/dev/null) || BASE_BRANCH=""
 
-          # If repo is empty or API call failed, default to 'main'
           if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
             echo "Repository is empty or default branch not found. Defaulting to 'main'"
             BASE_BRANCH="main"
@@ -75,16 +94,11 @@ jobs:
             exit 1
           fi
 
-          echo "repository=$REPO" >> "$GITHUB_OUTPUT"
           echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
-          EVENT_NAME: ${{ github.event_name }}
-          EVENT_ORG: ${{ github.event.client_payload.organization }}
-          EVENT_REPO: ${{ github.event.client_payload.repository }}
-          INPUT_ORG: ${{ inputs.organization }}
-          INPUT_REPO: ${{ inputs.repository }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          REPO: ${{ steps.target.outputs.repository }}
 
       - name: Check for opt-out file
         id: check_opt_out
@@ -97,9 +111,9 @@ jobs:
           fi
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
           REPO: ${{ steps.target.outputs.repository }}
-          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
+          BASE_BRANCH: ${{ steps.detect_branch.outputs.base_branch }}
 
       - name: Skip onboarding (repository opted out)
         if: steps.check_opt_out.outputs.opted_out == 'true'
@@ -133,7 +147,7 @@ jobs:
           echo "is_empty=$IS_EMPTY" >> "$GITHUB_OUTPUT"
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
           REPO: ${{ steps.target.outputs.repository }}
 
       - name: Checkout target repository
@@ -141,9 +155,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.target.outputs.repository }}
-          token: ${{ secrets.ONBOARDING_TOKEN }}
+          token: ${{ steps.app_token.outputs.token }}
           path: target-repo
-          ref: ${{ steps.target.outputs.base_branch }}
+          ref: ${{ steps.detect_branch.outputs.base_branch }}
 
       - name: Initialize empty repository locally
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'true'
@@ -151,10 +165,10 @@ jobs:
           mkdir -p target-repo
           cd target-repo
           git init
-          git remote add origin "https://x-access-token:${ONBOARDING_TOKEN}@github.com/${REPO}.git"
+          git remote add origin "https://x-access-token:${APP_TOKEN}@github.com/${REPO}.git"
         shell: bash
         env:
-          ONBOARDING_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          APP_TOKEN: ${{ steps.app_token.outputs.token }}
           REPO: ${{ steps.target.outputs.repository }}
 
       - name: Create branch and add SAST workflow
@@ -163,7 +177,7 @@ jobs:
         working-directory: target-repo
         env:
           IS_EMPTY: ${{ steps.check_empty.outputs.is_empty }}
-          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
+          BASE_BRANCH: ${{ steps.detect_branch.outputs.base_branch }}
         run: |
           git config user.name "MetaMask Security Bot"
           git config user.email "security-bot@metamask.io"
@@ -216,9 +230,9 @@ jobs:
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false' && steps.create_branch.outputs.skipped != 'true'
         working-directory: target-repo
         env:
-          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
           REPO_NAME: ${{ steps.target.outputs.repository }}
-          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
+          BASE_BRANCH: ${{ steps.detect_branch.outputs.base_branch }}
         run: |
           # Extract owner and repo name for URL construction
           OWNER=$(echo "$REPO_NAME" | cut -d'/' -f1)
@@ -240,7 +254,7 @@ jobs:
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false' && steps.create_branch.outputs.skipped != 'true'
         working-directory: target-repo
         env:
-          GH_TOKEN: ${{ secrets.ONBOARDING_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
         run: |
           PR_URL=$(gh pr view security/add-sast-scanner --json url -q .url)
           echo "✅ Pull Request created: $PR_URL"
@@ -255,7 +269,7 @@ jobs:
         shell: bash
         env:
           REPO: ${{ steps.target.outputs.repository }}
-          BASE_BRANCH: ${{ steps.target.outputs.base_branch }}
+          BASE_BRANCH: ${{ steps.detect_branch.outputs.base_branch }}
 
       - name: Post to Slack channel on failure
         if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
