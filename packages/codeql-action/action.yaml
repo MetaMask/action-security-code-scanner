@@ -107,7 +107,7 @@ runs:
 
     - name: Checkout Custom Query Repository
       id: checkout-custom-query
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: metamask/CodeQL-Queries
         ref: main

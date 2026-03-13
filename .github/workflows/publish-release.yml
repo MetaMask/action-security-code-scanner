@@ -24,7 +24,7 @@ jobs:
     name: Announce release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: name-hash
         name: Get Slack name and hash
         shell: bash
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # This is to guarantee that the most recent tag is fetched, which we
           # need for updating the shorthand major version tag.
