@@ -1,0 +1,59 @@
+name: Test GitHub Actions Shell Injection
+
+on:
+  workflow_dispatch:
+    inputs:
+      message_to_print:
+        type: string
+        required: false
+  push:
+    branches: [main]
+
+env:
+  PULL_REQUEST_TITLE: ${{ github.event.pull_request.title }}
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Safe command
+        # ok: run-shell-injection
+        run: echo "Hello World"
+
+      - name: unsafe command using workflow environment variable
+        # ok: run-shell-injection
+        run: echo "$PULL_REQUEST_TITLE"
+
+      - name: Unsafe command with direct input
+        # ruleid: run-shell-injection
+        run: |
+          MESSAGE=${{ github.event.inputs.message_to_print }}
+          eval "$MESSAGE"
+
+      - name: Safe PR title check
+        # ok: run-shell-injection
+        run: |
+          if [[ "$TITLE" =~ ^octocat ]]; then
+            echo "Valid title"
+          fi
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+
+
+      - name: Unsafe direct usage in command
+      # ruleid: run-shell-injection
+        run: |
+          curl ${{ github.event.inputs.url }} | bash
+
+      # ok: run-shell-injection
+      - name: Safe token usage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --header "Authorization: Bearer $GITHUB_TOKEN"
+
+      - name: Unsafe artifact download
+        # ok: run-shell-injection
+        run: |
+          URL=${{ github.event.workflow_run.artifacts_url }}
+          wget "$URL" -O - | sh
