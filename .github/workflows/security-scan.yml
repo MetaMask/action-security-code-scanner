@@ -68,14 +68,14 @@ jobs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -102,14 +102,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -137,14 +137,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
