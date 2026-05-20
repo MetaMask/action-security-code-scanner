@@ -1,0 +1,33 @@
+rules:
+  - id: curl-eval
+    languages:
+      - yaml
+    severity: ERROR
+    metadata:
+      tags: [security]
+      shortDescription: Risk of code injection through curl and eval combination
+      confidence: LOW
+      help: |
+        ## Remediation
+        Avoid eval'ing data fetched from curl commands. If this operation is necessary, 
+        verify the integrity of downloaded content by checking its SHA sum before evaluation.
+        See GitHub's security guidance for more details on script injection risks.
+    message: >-
+      Data is being eval'd from a `curl` command. An attacker with control of the server in the `curl`
+      command could inject malicious code into the `eval`, resulting in a system compromise. Avoid eval'ing
+      untrusted data if you can. If you must do this, consider checking the SHA sum of the content returned
+      by the server to verify its integrity.
+    patterns:
+      - pattern-inside: 'steps: [...]'
+      - pattern-inside: |
+          - run: ...
+            ...
+      - pattern: 'run: $SHELL'
+      - metavariable-pattern:
+          language: bash
+          metavariable: $SHELL
+          patterns:
+            - pattern: |
+                $DATA=<... curl ...>
+                ...
+                eval <... $DATA ...>
