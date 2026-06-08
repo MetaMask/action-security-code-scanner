@@ -107,14 +107,14 @@ runs:
 
     - name: Checkout Custom Query Repository
       id: checkout-custom-query
-      uses: actions/checkout@v4
+      uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
       with:
         repository: metamask/CodeQL-Queries
         ref: main
         path: ${{ github.workspace }}/custom-queries
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@411bbbe57033eedfc1a82d68c01345aa96c737d7 # v4
       with:
         config-file: ${{ github.workspace }}/codeql-config-generated.yml
         languages: ${{ inputs.language }}
@@ -123,7 +123,7 @@ runs:
 
     - name: Set up JDK for Java/Kotlin
       if: ${{ (inputs.language == 'java-kotlin' || inputs.language == 'java') && steps.generate-config.outputs.version != '' }}
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
         java-version: ${{ steps.generate-config.outputs.version }}
         distribution: ${{ steps.generate-config.outputs.distribution || 'temurin' }}
@@ -142,13 +142,13 @@ runs:
 
     - name: Run CodeQL Analysis
       id: codeql-analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@411bbbe57033eedfc1a82d68c01345aa96c737d7 # v4
       with:
         upload: false
         checkout_path: ${{ github.workspace }}/${{ inputs.repo }}
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@411bbbe57033eedfc1a82d68c01345aa96c737d7 # v4
       with:
         sarif_file: ${{ steps.codeql-analysis.outputs.sarif-output }}
         category: codeql-${{ inputs.language }}

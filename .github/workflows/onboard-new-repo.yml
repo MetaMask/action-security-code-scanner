@@ -22,7 +22,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout scanner action repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           path: scanner-repo
 
@@ -73,7 +73,7 @@ jobs:
 
       - name: Generate GitHub App token
         id: app_token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ secrets.ONBOARDING_APP_ID }}
           private-key: ${{ secrets.ONBOARDING_APP_PRIVATE_KEY }}
@@ -154,7 +154,7 @@ jobs:
 
       - name: Checkout target repository
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ steps.target.outputs.repository }}
           token: ${{ steps.app_token.outputs.token }}
@@ -275,7 +275,7 @@ jobs:
 
       - name: Post to Slack channel on failure
         if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
           payload: |
             {

@@ -68,14 +68,14 @@ jobs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -102,14 +102,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -137,14 +137,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -168,7 +168,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout target repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -211,7 +211,7 @@ jobs:
 
       - name: Post to Slack channel
         if: ${{ steps.scan-result.outputs.result == 'failure' && env.SLACK_WEBHOOK != '' }}
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
           payload: |
             {

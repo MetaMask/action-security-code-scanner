@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and setup environment
-        uses: MetaMask/action-checkout-and-setup@v1
+        uses: MetaMask/action-checkout-and-setup@89c66bb715514a0abd2e6bbfb3cae312b0100913 # v3.2.0
         with:
           is-high-risk-environment: false
           cache-node-modules: true
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and setup environment
-        uses: MetaMask/action-checkout-and-setup@v1
+        uses: MetaMask/action-checkout-and-setup@89c66bb715514a0abd2e6bbfb3cae312b0100913 # v3.2.0
         with:
           is-high-risk-environment: false
           cache-node-modules: true
