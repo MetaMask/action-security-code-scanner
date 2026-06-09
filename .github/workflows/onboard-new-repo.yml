@@ -24,7 +24,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout scanner action repository
-        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           path: scanner-repo
 
@@ -158,7 +158,7 @@ jobs:
 
       - name: Checkout target repository
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
-        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ steps.target.outputs.repository }}
           token: ${{ steps.app_token.outputs.token }}
