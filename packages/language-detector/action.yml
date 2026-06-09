@@ -41,6 +41,10 @@ runs:
       with:
         node-version: '20'
 
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
     - name: Install dependencies
       shell: bash
       run: |
