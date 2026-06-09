@@ -92,7 +92,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update shorthand major version tag
         run: |
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           ./.github/workflows/scripts/update-major-version-tag.sh \
-            ${STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION}
+            "${STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION}"
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION: ${{ steps.publish-release.outputs.release-version }}
