@@ -68,14 +68,14 @@ jobs:
       matrix: ${{ steps.detect-languages.outputs.matrix }}
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -102,14 +102,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -137,14 +137,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout monorepo (for local actions)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: MetaMask/action-security-code-scanner
           ref: ${{ inputs.scanner-ref }}
           path: ${{ env.MONOREPO_PATH }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
         with:
           repository: ${{ inputs.repo }}
           path: ${{ inputs.repo }}
@@ -154,10 +154,39 @@ jobs:
         with:
           paths_ignored: ${{ inputs.paths-ignored }}
 
+  # Static analysis of GitHub Actions workflows using zizmor
+  # (https://docs.zizmor.sh/). Surfaces workflow-level patterns that enable
+  # supply-chain attacks: `pull_request_target` "Pwn Request", template
+  # injection, excessive permissions, OIDC token exposure, cache poisoning,
+  # and unpinned uses.
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    needs: setup
+
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          repository: ${{ inputs.repo }}
+          path: ${{ inputs.repo }}
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        with:
+          inputs: ${{ inputs.repo }}
+          persona: pedantic
+          min-severity: medium
+          advanced-security: 'false'
+          annotations: 'true'
+
   # Collect results and handle notifications
   finalize:
     name: Finalize scans and notify
-    needs: [codeql-analysis, semgrep-analysis]
+    needs: [codeql-analysis, semgrep-analysis, zizmor]
     if: always()
     runs-on: ubuntu-latest
     env:
@@ -170,8 +199,9 @@ jobs:
         env:
           CODEQL_RESULT: ${{ needs.codeql-analysis.result }}
           SEMGREP_RESULT: ${{ needs.semgrep-analysis.result }}
+          ZIZMOR_RESULT: ${{ needs.zizmor.result }}
         run: |
-          if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" ]]; then
+          if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" || "$ZIZMOR_RESULT" == "failure" ]]; then
             echo "result=failure" >> "$GITHUB_OUTPUT"
             echo "SCAN_RESULT=failure" >> "$GITHUB_ENV"
           else
@@ -181,7 +211,7 @@ jobs:
 
       - name: Post to Slack channel
         if: ${{ steps.scan-result.outputs.result == 'failure' && env.SLACK_WEBHOOK != '' }}
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
           payload: |
             {
