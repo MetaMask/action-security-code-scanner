@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.0]
 
-### Uncategorized
+### Changed
 
 - Update CodeQL action version in Semgrep workflow for consistency
 - Update actions/checkout to latest commit for consistency across workflows
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.6]
 
-### Uncategorized
+### Changed
 
 - fix(semgrep): prevent shell injection by using environment variable for paths_ignored
 

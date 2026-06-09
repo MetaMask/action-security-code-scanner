@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.6]
 
-### Uncategorized
+### Changed
 
 - fix(codeql): prevent shell injection in debug steps and build command
 
