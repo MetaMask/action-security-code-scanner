@@ -14,6 +14,8 @@ on:
   repository_dispatch:
     types: [new_repository_created]
 
+permissions: {}
+
 jobs:
   create-sast-pr:
     runs-on: ubuntu-latest
@@ -22,7 +24,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout scanner action repository
-        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           path: scanner-repo
 
@@ -79,12 +81,18 @@ jobs:
           private-key: ${{ secrets.ONBOARDING_APP_PRIVATE_KEY }}
           owner: ${{ steps.target.outputs.organization }}
           repositories: ${{ steps.target.outputs.repo_name }}
+          permission-metadata: read
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Detect default branch
         id: detect_branch
         run: |
           echo "Detecting default branch for $REPO..."
-          BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>/dev/null) || BASE_BRANCH=""
+          if ! BASE_BRANCH=$(gh api "repos/$REPO" --jq '.default_branch' 2>&1); then
+            echo "::error::GitHub API call failed while detecting default branch for $REPO: $BASE_BRANCH"
+            exit 1
+          fi
 
           if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
             echo "Repository is empty or default branch not found. Defaulting to 'main'"
@@ -154,7 +162,7 @@ jobs:
 
       - name: Checkout target repository
         if: steps.check_opt_out.outputs.opted_out != 'true' && steps.check_empty.outputs.is_empty == 'false'
-        uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           repository: ${{ steps.target.outputs.repository }}
           token: ${{ steps.app_token.outputs.token }}

@@ -14,6 +14,8 @@ on:
         description: 'A specific version to bump to. Mutually exclusive with "release-type".'
         required: false
 
+permissions: {}
+
 jobs:
   create-release-pr:
     runs-on: ubuntu-latest
@@ -21,7 +23,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           # This is to guarantee that the most recent tag is fetched.
           # This can be configured to a more reasonable value by consumers.
@@ -33,6 +35,8 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version-file: '.nvmrc'
+      - name: Enable Corepack
+        run: corepack enable
       - uses: MetaMask/action-create-release-pr@4b3b9f5e764afa2e028c1759fcc9891e591d6782 # v5.0.0
         with:
           release-type: ${{ github.event.inputs.release-type }}

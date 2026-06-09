@@ -3,9 +3,13 @@ name: Build, Lint, and Test
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   prepare:
     name: Prepare
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and setup environment
@@ -17,13 +21,15 @@ jobs:
   lint:
     name: Lint
     needs: prepare
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Checkout and setup environment
         uses: MetaMask/action-checkout-and-setup@89c66bb715514a0abd2e6bbfb3cae312b0100913 # v3.2.0
         with:
           is-high-risk-environment: false
-          cache-node-modules: true
       - run: yarn lint
       - name: Validate RC changelog
         if: ${{ startsWith(github.head_ref, 'release/') }}
