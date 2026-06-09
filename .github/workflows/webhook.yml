@@ -5,6 +5,8 @@ on:
   repository_dispatch:
     types: [code_scanning_alert]
 
+permissions: {}
+
 jobs:
   run-security-scan:
     permissions:

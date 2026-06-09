@@ -3,9 +3,13 @@ name: Build, Lint, and Test
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   prepare:
     name: Prepare
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and setup environment
@@ -17,6 +21,8 @@ jobs:
   lint:
     name: Lint
     needs: prepare
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and setup environment

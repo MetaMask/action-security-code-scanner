@@ -14,6 +14,8 @@ on:
   repository_dispatch:
     types: [new_repository_created]
 
+permissions: {}
+
 jobs:
   create-sast-pr:
     runs-on: ubuntu-latest
@@ -79,6 +81,8 @@ jobs:
           private-key: ${{ secrets.ONBOARDING_APP_PRIVATE_KEY }}
           owner: ${{ steps.target.outputs.organization }}
           repositories: ${{ steps.target.outputs.repo_name }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Detect default branch
         id: detect_branch

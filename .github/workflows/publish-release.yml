@@ -19,12 +19,18 @@ on:
       SLACK_WEBHOOK_URL:
         required: true
 
+permissions: {}
+
 jobs:
   announce-release:
     name: Announce release
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # v6.0.3
+        with:
+          persist-credentials: false
       - id: name-hash
         name: Get Slack name and hash
         shell: bash
@@ -38,13 +44,16 @@ jobs:
         shell: bash
         if: inputs.slack-subteam != ''
         run: |
-          DEFAULT_TEXT="\`${{ steps.name-hash.outputs.NAME_VERSION }}\` is awaiting deployment :rocket: \n <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/|→ Click here to review deployment>"
-          SUBTEAM_TEXT="${{ inputs.slack-subteam }}"
+          DEFAULT_TEXT="\`${STEPS_NAME_HASH_OUTPUTS_NAME_VERSION}\` is awaiting deployment :rocket: \n <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/|→ Click here to review deployment>"
+          SUBTEAM_TEXT="${INPUTS_SLACK_SUBTEAM}"
           FINAL_TEXT="$DEFAULT_TEXT"
           if [[ ! "$SUBTEAM_TEXT" == "" ]]; then
             FINAL_TEXT="<!subteam^$SUBTEAM_TEXT> $DEFAULT_TEXT"
           fi
           echo "FINAL_TEXT=$FINAL_TEXT" >> "$GITHUB_OUTPUT"
+        env:
+          STEPS_NAME_HASH_OUTPUTS_NAME_VERSION: ${{ steps.name-hash.outputs.NAME_VERSION }}
+          INPUTS_SLACK_SUBTEAM: ${{ inputs.slack-subteam }}
       - name: Post to a Slack channel
         if: inputs.slack-subteam != ''
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
@@ -75,6 +84,7 @@ jobs:
           # need for updating the shorthand major version tag.
           fetch-depth: 0
           ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Publish release
         uses: MetaMask/action-publish-release@b842808ef45c9e3b085060b94b1d4a1fac00aa81 # v3.2.2
         id: publish-release
@@ -83,4 +93,6 @@ jobs:
       - name: Update shorthand major version tag
         run: |
           ./.github/workflows/scripts/update-major-version-tag.sh \
-            ${{ steps.publish-release.outputs.release-version }}
+            ${STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION}
+        env:
+          STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION: ${{ steps.publish-release.outputs.release-version }}

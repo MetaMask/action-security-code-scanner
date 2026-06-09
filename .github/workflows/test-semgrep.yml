@@ -2,8 +2,12 @@ name: Test Semgrep Rules
 
 on: [push]
 
+permissions: {}
+
 jobs:
   validate-and-test:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code

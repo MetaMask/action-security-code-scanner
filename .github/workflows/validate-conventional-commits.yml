@@ -5,8 +5,12 @@ on:
       - main
     types: [opened, edited, reopened, synchronize]
 
+permissions: {}
+
 jobs:
   pr-title-linter:
+    permissions:
+      pull-requests: read
     runs-on: ubuntu-latest
     if: ${{ !startsWith(github.head_ref , 'release/') }}
     steps:
