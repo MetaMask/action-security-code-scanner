@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.0]
 
+### Added
+
+- Add zizmor static analysis of GitHub Actions workflows
+
+### Fixed
+
+- Addressed zizmor findings
+
 ## [2.0.5]
 
 ### Added
