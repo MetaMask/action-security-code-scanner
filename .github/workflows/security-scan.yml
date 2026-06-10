@@ -160,12 +160,13 @@ jobs:
   # injection, excessive permissions, OIDC token exposure, cache poisoning,
   # and unpinned uses.
   zizmor:
-    name: zizmor
+    name: GitHub Actions security (zizmor)
     runs-on: ubuntu-latest
     needs: setup
 
     permissions:
       contents: read
+      security-events: write
     steps:
       - name: Checkout target repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -174,14 +175,20 @@ jobs:
           path: ${{ inputs.repo }}
           persist-credentials: false
 
+      # zizmor uploads its own SARIF to code scanning (advanced-security:
+      # 'true'), where findings are non-blocking by design. Note: the
+      # 'annotations' input is mutually exclusive with advanced-security and
+      # must not be set alongside it. continue-on-error keeps a zizmor internal
+      # error from blocking CI during rollout. To start blocking on findings,
+      # enable code scanning merge protection on the repo (no change here).
       - name: Run zizmor
+        continue-on-error: true
         uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
         with:
           inputs: ${{ inputs.repo }}
           persona: pedantic
           min-severity: medium
-          advanced-security: 'false'
-          annotations: 'true'
+          advanced-security: 'true'
 
   # Collect results and handle notifications
   finalize:
@@ -199,9 +206,11 @@ jobs:
         env:
           CODEQL_RESULT: ${{ needs.codeql-analysis.result }}
           SEMGREP_RESULT: ${{ needs.semgrep-analysis.result }}
-          ZIZMOR_RESULT: ${{ needs.zizmor.result }}
         run: |
-          if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" || "$ZIZMOR_RESULT" == "failure" ]]; then
+          # zizmor is intentionally excluded from this gate: it runs
+          # non-blocking (continue-on-error) and reports to code scanning.
+          # Enforce zizmor findings via code scanning merge protection, not here.
+          if [[ "$CODEQL_RESULT" == "failure" || "$SEMGREP_RESULT" == "failure" ]]; then
             echo "result=failure" >> "$GITHUB_OUTPUT"
             echo "SCAN_RESULT=failure" >> "$GITHUB_ENV"
           else
