@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0]
+
+### Uncategorized
+
+- Update CodeQL action version in Semgrep workflow for consistency
+- Update actions/checkout to latest commit for consistency across workflows
+- Update GitHub Actions to use latest versions of dependencies
+
 ## [2.0.6]
 
 ### Uncategorized
@@ -39,7 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrated action from its separate repository to the monorepo
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.6...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.6...v2.1.0
 [2.0.6]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.2...v2.0.5
 [2.0.2]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...v2.0.2
