@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.0]
 
-### Uncategorized
+### Changed
 
 - Update Node.js version to 24 in language-detector action and checkout action version in build-lint-test workflow for consistency
 - Update Node.js version in .nvmrc and enable Corepack in actions using node
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.2]
 
-### Uncategorized
+### Changed
 
 - Update language detector and job configurator to add Github Actions support by default ([#60](https://github.com/MetaMask/action-security-code-scanner/pull/60))
 
