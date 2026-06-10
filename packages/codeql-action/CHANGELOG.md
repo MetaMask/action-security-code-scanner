@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0]
+
+### Changed
+
+- Update publish-release workflow and CodeQL action versions
+- Update actions/checkout to latest commit for consistency across workflows
+- Update GitHub Actions to use latest versions of dependencies
+
 ## [2.0.6]
 
-### Uncategorized
+### Changed
 
 - fix(codeql): prevent shell injection in debug steps and build command
 
@@ -41,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added multi language support
 - Updated CodeQL action to v4
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.6...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.6...v2.1.0
 [2.0.6]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.3...v2.0.5
 [2.0.3]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.0.1...v2.0.3
