@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add `actions: read` permission to the zizmor job to fix "resource not accessible by integration" errors in private repositories
+
 ## [2.1.0]
 
 ### Added
