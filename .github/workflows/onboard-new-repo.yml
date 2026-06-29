@@ -84,6 +84,7 @@ jobs:
           permission-metadata: read
           permission-contents: write
           permission-pull-requests: write
+          permission-workflows: write
 
       - name: Detect default branch
         id: detect_branch
