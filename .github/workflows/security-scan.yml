@@ -223,14 +223,14 @@ jobs:
         if: ${{ steps.scan-result.outputs.result == 'failure' && env.SLACK_WEBHOOK != '' }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "Security scan failed for ${{ env.REPO }} - Run: https://github.com/${{ env.REPO }}/actions/runs/${{ github.run_id }}",
               "channel": "#security-notifications"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_URL: ${{ env.APPSEC_BOT_SLACK_WEBHOOK }}
 
       - name: Log metrics
         if: ${{ env.PROJECT_METRICS_TOKEN != '' }}

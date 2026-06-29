@@ -7,6 +7,7 @@
 This monorepo provides a reusable security scanning workflow with automatic language detection and parallel execution:
 
 - **`.github/workflows/security-scan.yml`** - Main reusable workflow (orchestrator)
+- **`.github/`** - Workspace package for workflow versioning (`@metamask/action-code-scanner-github`)
 - **`packages/language-detector/`** - Detects languages and creates scan matrix
 - **`packages/codeql-action/`** - Custom CodeQL analysis with repo-specific configs
 - **`packages/semgrep-action/`** - Semgrep pattern-based scanner
@@ -110,8 +111,10 @@ jobs:
 
 ```
 security-scanner-monorepo/
-├── .github/workflows/
-│   └── security-scan.yml        # Main reusable workflow
+├── .github/                     # Workflow workspace package
+│   ├── package.json
+│   └── workflows/
+│       └── security-scan.yml    # Main reusable workflow
 ├── packages/
 │   ├── language-detector/       # Language detection & matrix creation
 │   ├── codeql-action/          # CodeQL scanner

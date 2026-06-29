@@ -84,6 +84,7 @@ jobs:
           permission-metadata: read
           permission-contents: write
           permission-pull-requests: write
+          permission-workflows: write
 
       - name: Detect default branch
         id: detect_branch
@@ -285,10 +286,11 @@ jobs:
         if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": "Onboarding failed for ${{ steps.target.outputs.repository }} - Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          
