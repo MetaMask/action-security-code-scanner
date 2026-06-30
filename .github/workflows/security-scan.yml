@@ -230,7 +230,7 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          SLACK_WEBHOOK_TYPE: incoming-webhook
 
       - name: Log metrics
         if: ${{ env.PROJECT_METRICS_TOKEN != '' }}
