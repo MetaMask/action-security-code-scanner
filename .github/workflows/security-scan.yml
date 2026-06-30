@@ -222,6 +222,8 @@ jobs:
       - name: Post to Slack channel
         if: ${{ steps.scan-result.outputs.result == 'failure' && env.SLACK_WEBHOOK != '' }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        webhook: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
+        webhook-type: incoming-webhook
         with:
           payload: |
             {
@@ -229,8 +231,7 @@ jobs:
               "channel": "#security-notifications"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: incoming-webhook
+          SLACK_WEBHOOK_URL: ${{ env.APPSEC_BOT_SLACK_WEBHOOK }}
 
       - name: Log metrics
         if: ${{ env.PROJECT_METRICS_TOKEN != '' }}
