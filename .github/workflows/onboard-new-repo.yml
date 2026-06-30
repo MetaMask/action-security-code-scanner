@@ -286,7 +286,6 @@ jobs:
         if: ${{ failure() && env.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
-          # webhook: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
           webhook-type: incoming-webhook
           payload: |
             {
