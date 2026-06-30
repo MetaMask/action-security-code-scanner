@@ -19,7 +19,8 @@ on:
       SLACK_WEBHOOK_URL:
         required: true
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   announce-release:
@@ -74,7 +75,8 @@ jobs:
     environment: action-publish
     needs: announce-release
     permissions:
-      contents: write
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -85,16 +87,22 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Get token
+        id: get-token
+        uses: MetaMask/github-tools/.github/actions/get-token@v1
+        with:
+          token-exchange-url: ${{ vars.TOKEN_EXCHANGE_URL }}
+          permissions: |
+            contents: write
+
       - name: Publish release
         uses: MetaMask/action-publish-release@b842808ef45c9e3b085060b94b1d4a1fac00aa81 # v3.2.2
         id: publish-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.get-token.outputs.token }}
+
       - name: Update shorthand major version tag
-        run: |
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          ./.github/workflows/scripts/update-major-version-tag.sh \
-            "${STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          STEPS_PUBLISH_RELEASE_OUTPUTS_RELEASE_VERSION: ${{ steps.publish-release.outputs.release-version }}
+        uses: MetaMask/github-tools/.github/actions/update-major-version-tag@v1
+        with:
+          release-version: ${{ steps.publish-release.outputs.release-version }}
+          github-token: ${{ steps.get-token.outputs.token }}
