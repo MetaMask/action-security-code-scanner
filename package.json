@@ -12,7 +12,7 @@
   "type": "module",
   "workspaces": [
     "packages/*",
-    ".github"
+    ".github/"
   ],
   "scripts": {
     "build": "yarn workspaces foreach -A run build",

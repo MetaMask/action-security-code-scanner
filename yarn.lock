@@ -796,6 +796,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/action-code-scanner-github@workspace:.github":
+  version: 0.0.0-use.local
+  resolution: "@metamask/action-code-scanner-github@workspace:.github"
+  languageName: unknown
+  linkType: soft
+
 "@metamask/action-security-code-scanner@workspace:.":
   version: 0.0.0-use.local
   resolution: "@metamask/action-security-code-scanner@workspace:."
