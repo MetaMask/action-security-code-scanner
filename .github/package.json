@@ -1,0 +1,5 @@
+{
+    "name": "@metamask/action-security-code-scanner-github",
+    "version": "2.1.0",
+    "private": true
+}
