@@ -8,10 +8,20 @@ import { execSync } from 'child_process';
 import { readFileSync, readdirSync, accessSync, constants } from 'fs';
 import { join } from 'path';
 
-const packagesDir = 'packages';
+const workspacePackages = [
+  { name: '.github', path: '.github', requiresAction: false },
+  ...readdirSync('packages').map((packageName) => ({
+    name: packageName,
+    path: join('packages', packageName),
+    requiresAction: true,
+  })),
+];
 
-function checkPackage(packageName) {
-  const packagePath = join(packagesDir, packageName);
+function checkPackage({
+  name: packageName,
+  path: packagePath,
+  requiresAction,
+}) {
   const packageJsonPath = join(packagePath, 'package.json');
 
   console.log(`\n🔍 Checking package: ${packageName}`);
@@ -34,6 +44,11 @@ function checkPackage(packageName) {
       console.log(`  ⚠️  Package is not marked as private`);
     } else {
       console.log(`  ✅ Package is correctly marked as private`);
+    }
+
+    if (!requiresAction) {
+      console.log(`  ℹ️  Workflow package (no action.yml required)`);
+      return;
     }
 
     // Check if action.yml or action.yaml exists
@@ -86,8 +101,7 @@ function main() {
   console.log('🚀 Checking all packages...');
 
   try {
-    const packages = readdirSync(packagesDir);
-    packages.forEach(checkPackage);
+    workspacePackages.forEach(checkPackage);
 
     console.log('\n✨ Package check complete!');
   } catch (error) {

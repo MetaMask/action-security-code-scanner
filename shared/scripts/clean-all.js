@@ -52,16 +52,20 @@ function main() {
   // Clean root directory
   cleanDirectory('.', artifactPaths);
 
-  // Clean packages
-  try {
-    execSync('ls packages/', { stdio: 'pipe' })
+  // Clean workspace packages
+  const workspacePaths = [
+    '.github',
+    ...execSync('ls packages/', { stdio: 'pipe' })
       .toString()
       .trim()
       .split('\n')
-      .forEach((packageName) => {
-        const packagePath = join('packages', packageName);
-        cleanDirectory(packagePath, artifactPaths);
-      });
+      .map((packageName) => join('packages', packageName)),
+  ];
+
+  try {
+    workspacePaths.forEach((packagePath) => {
+      cleanDirectory(packagePath, artifactPaths);
+    });
   } catch (error) {
     console.error('❌ Error cleaning packages:', error.message);
   }
