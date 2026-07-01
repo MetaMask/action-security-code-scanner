@@ -230,7 +230,7 @@ jobs:
               "channel": "#security-notifications"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ env.APPSEC_BOT_SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK }}
 
       - name: Log metrics
         if: ${{ env.PROJECT_METRICS_TOKEN != '' }}
