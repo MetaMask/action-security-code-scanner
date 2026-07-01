@@ -293,4 +293,3 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.APPSEC_BOT_SLACK_WEBHOOK }}
-          

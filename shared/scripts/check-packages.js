@@ -17,7 +17,11 @@ const workspacePackages = [
   })),
 ];
 
-function checkPackage({ name: packageName, path: packagePath, requiresAction }) {
+function checkPackage({
+  name: packageName,
+  path: packagePath,
+  requiresAction,
+}) {
   const packageJsonPath = join(packagePath, 'package.json');
 
   console.log(`\n🔍 Checking package: ${packageName}`);

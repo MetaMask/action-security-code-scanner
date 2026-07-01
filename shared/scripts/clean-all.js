@@ -53,11 +53,14 @@ function main() {
   cleanDirectory('.', artifactPaths);
 
   // Clean workspace packages
-  const workspacePaths = ['.github', ...execSync('ls packages/', { stdio: 'pipe' })
-    .toString()
-    .trim()
-    .split('\n')
-    .map((packageName) => join('packages', packageName))];
+  const workspacePaths = [
+    '.github',
+    ...execSync('ls packages/', { stdio: 'pipe' })
+      .toString()
+      .trim()
+      .split('\n')
+      .map((packageName) => join('packages', packageName)),
+  ];
 
   try {
     workspacePaths.forEach((packagePath) => {
