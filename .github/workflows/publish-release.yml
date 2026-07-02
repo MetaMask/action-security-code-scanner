@@ -60,14 +60,13 @@ jobs:
         uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
         with:
           webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
               "text": "${{ steps.final-text.outputs.FINAL_TEXT }}",
               "icon_url": "${{ inputs.slack-icon-url }}",
               "username": "${{ inputs.slack-username }}"
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         continue-on-error: true
 
   publish-release:
