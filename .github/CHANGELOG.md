@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1]
+
+### Uncategorized
+
+- fix SLACK_WEBHOOK_TYPE to lowercase in workflow files ([#94](https://github.com/MetaMask/action-security-code-scanner/pull/94))
+- Update onboarding workflow to grant write permission for workflows ([#92](https://github.com/MetaMask/action-security-code-scanner/pull/92))
+- Fix contents permission in main.yml
+- Merge branch 'main' into onboarding-automation-permissions-fix
+
 ### Added
 
 - Add `.github/` as a workspace package for workflow versioning
@@ -18,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix: slack action ([#95](https://github.com/MetaMask/action-security-code-scanner/pull/95))
+- fix: resource not accessible by integration
 - Fix Slack webhook configuration to use `webhook-type` input instead of deprecated `SLACK_WEBHOOK_TYPE` env var
 - Add `actions: read` permission to zizmor job to fix "resource not accessible by integration" errors in private repositories
 
@@ -31,5 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Addressed zizmor findings
 
-[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.1.0
