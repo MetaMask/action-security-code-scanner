@@ -1,6 +1,6 @@
 {
   "name": "@metamask/action-code-scanner-github",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "description": "GitHub Actions workflows for the security code scanner",
   "repository": {
