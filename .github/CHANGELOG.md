@@ -30,3 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Addressed zizmor findings
+
+[Unreleased]: https://github.com/MetaMask/action-security-code-scanner/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/MetaMask/action-security-code-scanner/releases/tag/v2.1.0
