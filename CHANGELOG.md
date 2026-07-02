@@ -7,8 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `.github/` as a workspace package for workflow versioning
+
+### Changed
+
+- Use token exchange for release publishing instead of `GITHUB_TOKEN`
+- Grant `workflows: write` permission in onboarding workflow
+
 ### Fixed
 
+- Fix Slack webhook configuration to use `webhook-type` input instead of deprecated `SLACK_WEBHOOK_TYPE` env var
 - Add `actions: read` permission to the zizmor job to fix "resource not accessible by integration" errors in private repositories
 
 ## [2.1.0]
