@@ -9,12 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.1]
 
-### Uncategorized
+### Fixed
 
-- fix SLACK_WEBHOOK_TYPE to lowercase in workflow files ([#94](https://github.com/MetaMask/action-security-code-scanner/pull/94))
 - Update onboarding workflow to grant write permission for workflows ([#92](https://github.com/MetaMask/action-security-code-scanner/pull/92))
-- Fix contents permission in main.yml
-- Merge branch 'main' into onboarding-automation-permissions-fix
 
 ### Added
 
