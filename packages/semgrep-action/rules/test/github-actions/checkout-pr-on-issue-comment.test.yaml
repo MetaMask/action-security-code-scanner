@@ -1,0 +1,84 @@
+name: Update Attibutions
+
+on:
+  issue_comment:
+    types: created
+
+jobs:
+  react-to-comment:
+    name: React to the comment
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '@metamaskbot update-attributions') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: React to the comment
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${REPO}/issues/comments/${COMMENT_ID}/reactions" \
+            -f content='+1'
+        env:
+          COMMENT_ID: ${{ github.event.comment.id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+
+  prepare:
+    name: Prepare dependencies
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '@metamaskbot update-attributions') }}
+    outputs:
+      COMMIT_SHA: ${{ steps.commit-sha.outputs.COMMIT_SHA }}
+    steps:
+      - name: Checkout repository
+        # ok: checkout-pr-on-issue-comment
+        uses: actions/checkout@v4
+      - name: Checkout pull request
+        # ruleid: checkout-pr-on-issue-comment
+        run: gh pr checkout "${PR_NUMBER}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+      - run: corepack enable
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - name: Install Yarn dependencies
+        run: yarn --immutable
+      - name: Get commit SHA
+        id: commit-sha
+        run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+# 'gh pr checkout "..."'
+  update-attributions:
+    name: Update Attributions
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Checkout pull request
+        # ruleid: checkout-pr-on-issue-comment
+        run: gh pr checkout "${PR_NUMBER}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+      - run: corepack enable
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - name: Install dependencies from cache
+        run: yarn --immutable --immutable-cache
+      - name: Generate Atributions
+        run: yarn attributions:generate
+      - name: Cache attributions file
+        uses: actions/cache/save@v3
+        with:
+          path: attribution.txt
+          key: cache-build-${{ needs.prepare.outputs.COMMIT_SHA }}

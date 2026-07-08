@@ -1,0 +1,51 @@
+rules:
+- id: checkout-pr-on-issue-comment
+  languages:
+    - yaml
+  message: >-
+    A workflow triggered by an `issue_comment` event is checking out a pull request. This could allow an attacker to inject malicious code by commenting on an issue in a way that causes unintended execution. Ensure proper validation is in place before checking out PRs.
+  severity: ERROR
+  patterns:
+    - pattern-either:
+      - pattern-inside: |
+          on:
+            ...
+            issue_comment: ...
+            ...
+          ...
+      - pattern-inside: |
+          on: [..., issue_comment, ...]
+          ...
+      - pattern-inside: |
+          on: issue_comment
+          ...
+    - pattern-inside: |
+        jobs:
+          ...
+          $JOBNAME:
+            ...
+            steps:
+              ...
+    - pattern: |
+        run: $CMD
+    - metavariable-regex:
+        metavariable: $CMD
+        regex: ".*gh pr checkout.*"
+  metadata:
+    category: security
+    cwe:
+      - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+    owasp:
+      - A08:2021 - Software and Data Integrity Failures
+    references:
+      - https://docs.github.com/en/actions/learn-github-actions/security-hardening-for-github-actions#understanding-the-risk-of-script-injections
+    technology:
+      - github-actions
+      - actions/checkout
+    cwe2022-top25: true
+    cwe2021-top25: true
+    subcategory:
+      - audit
+    likelihood: MEDIUM
+    impact: HIGH
+    confidence: MEDIUM
