@@ -6,6 +6,13 @@ paths-ignore:
   - "<%- path %>"
 <% }); -%>
 
+<% if (paths?.length > 0) { -%>
+paths:
+<% paths.forEach(function(path) { -%>
+  - "<%- path %>"
+<% }); -%>
+<% } -%>
+
 queries:
 <% queries.forEach(function(query) { -%>
   - name: <%- query.name %>

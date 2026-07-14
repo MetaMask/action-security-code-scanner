@@ -67,6 +67,7 @@ async function main() {
     BUILD_COMMAND,
     VERSION,
     DISTRIBUTION,
+    PATHS,
     PATHS_IGNORED,
     RULES_EXCLUDED,
   } = process.env;
@@ -78,6 +79,11 @@ async function main() {
     buildCommand: BUILD_COMMAND,
     version: VERSION,
     distribution: DISTRIBUTION,
+    paths: PATHS
+      ? PATHS.split('\n')
+          .filter((line) => line.trim() !== '')
+          .map(sanitizePath)
+      : [],
     pathsIgnored: PATHS_IGNORED
       ? PATHS_IGNORED.split('\n')
           .filter((line) => line.trim() !== '')
@@ -120,6 +126,7 @@ async function main() {
   fs.appendFileSync(outputFile, `distribution=${escapeOutput(distribution)}\n`);
 
   const output = ejs.render(template, {
+    paths: [...(config.paths ?? []), ...finalInputs.paths],
     pathsIgnored: [...config.pathsIgnored, ...finalInputs.pathsIgnored],
     rulesExcluded: [...config.rulesExcluded, ...finalInputs.rulesExcluded],
     queries: config.queries,
