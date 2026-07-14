@@ -38,6 +38,11 @@ on:
         description: 'The git ref of the scanner to use'
         required: true
         type: string
+      paths:
+        description: 'Multi-line list of paths to include during scan (one path per line, supports glob patterns — only these paths will be analysed)'
+        required: false
+        type: string
+        default: ''
       paths-ignored:
         description: 'Multi-line list of paths to ignore during scan (one path per line, supports glob patterns)'
         required: false
@@ -119,6 +124,7 @@ jobs:
         with:
           repo: ${{ inputs.repo }}
           language: ${{ matrix.language }}
+          paths: ${{ inputs.paths }}
           paths_ignored: ${{ inputs.paths-ignored }}
           rules_excluded: ${{ inputs.rules-excluded }}
           build_mode: ${{ matrix.build_mode }}
