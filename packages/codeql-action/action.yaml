@@ -7,8 +7,11 @@ inputs:
   language:
     description: 'Programming language to analyze'
     required: true
+  paths:
+    description: 'Newline-delimited paths to include during scan (only these paths will be analysed)'
+    required: false
   paths_ignored:
-    description: 'Comma delimited paths to ignore during scan'
+    description: 'Newline-delimited paths to ignore during scan'
     required: false
   rules_excluded:
     description: 'Comma delimited IDs of rules to exclude'
@@ -38,6 +41,7 @@ runs:
         INPUT_BUILD_COMMAND: ${{ inputs.build_command }}
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_DISTRIBUTION: ${{ inputs.distribution }}
+        INPUT_PATHS: ${{ inputs.paths }}
         INPUT_PATHS_IGNORED: ${{ inputs.paths_ignored }}
         INPUT_RULES_EXCLUDED: ${{ inputs.rules_excluded }}
       run: |
@@ -48,6 +52,7 @@ runs:
         echo "Build command: $INPUT_BUILD_COMMAND"
         echo "Version: $INPUT_VERSION"
         echo "Distribution: $INPUT_DISTRIBUTION"
+        echo "Paths: $INPUT_PATHS"
         echo "Paths ignored: $INPUT_PATHS_IGNORED"
         echo "Rules excluded: $INPUT_RULES_EXCLUDED"
         echo "=================================================================="
@@ -80,6 +85,7 @@ runs:
         BUILD_COMMAND: ${{ inputs.build_command }}
         VERSION: ${{ inputs.version }}
         DISTRIBUTION: ${{ inputs.distribution }}
+        PATHS: ${{ inputs.paths }}
         PATHS_IGNORED: ${{ inputs.paths_ignored}}
         RULES_EXCLUDED: ${{ inputs.rules_excluded}}
 

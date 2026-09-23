@@ -206,6 +206,7 @@ describe('generate-config', () => {
         buildCommand: undefined,
         version: undefined,
         distribution: undefined,
+        paths: ['src/'],
         pathsIgnored: ['test', 'vendor'],
         rulesExcluded: ['go/rule1'],
       };
@@ -223,6 +224,7 @@ describe('generate-config', () => {
       // Other properties should remain unchanged
       expect(result.repo).toBe('owner/repo');
       expect(result.language).toBe('go');
+      expect(result.paths).toEqual(['src/']);
       expect(result.pathsIgnored).toEqual(['test', 'vendor']);
       expect(result.rulesExcluded).toEqual(['go/rule1']);
     });
