@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Clean build artifacts and temporary files across all packages
+ * Clean build artifacts and temporary files across all packages.
+ *
+ * Security note: artifact and package paths are handled with Node's fs APIs
+ * only. We intentionally avoid spawning a shell (no shell-based recursive
+ * delete) so that a directory or pattern name containing shell metacharacters
+ * can never be interpreted by a shell, and so the script runs cross-platform.
  */
 
-import { execSync } from 'child_process';
-import { rmSync, existsSync } from 'fs';
+import { readdirSync, rmSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const artifactPaths = [
@@ -19,6 +23,21 @@ const artifactPaths = [
   '*.sarif',
 ];
 
+/**
+ * Minimal, dependency-free matcher for simple glob patterns of the form
+ * `*.ext`. Kept local so no shell is spawned and path components stay within
+ * the target directory.
+ */
+function globMatch(name, pattern) {
+  const star = pattern.indexOf('*');
+  if (star === -1) {
+    return name === pattern;
+  }
+  const before = pattern.slice(0, star);
+  const after = pattern.slice(star + 1);
+  return name.startsWith(before) && name.endsWith(after);
+}
+
 function cleanDirectory(dirPath, patterns) {
   console.log(`🧹 Cleaning: ${dirPath}`);
 
@@ -26,11 +45,23 @@ function cleanDirectory(dirPath, patterns) {
     const fullPath = join(dirPath, pattern);
 
     if (pattern.includes('*')) {
-      // Handle glob patterns
+      // Expand the glob in-process (e.g. '*.log') instead of handing the path
+      // to a shell. This removes shell-interpolation risk entirely.
       try {
-        execSync(`rm -rf ${fullPath}`, { cwd: process.cwd(), stdio: 'pipe' });
+        const entries = existsSync(dirPath)
+          ? readdirSync(dirPath, { withFileTypes: true })
+          : [];
+        for (const entry of entries) {
+          if (globMatch(entry.name, pattern)) {
+            rmSync(join(dirPath, entry.name), {
+              recursive: entry.isDirectory(),
+              force: true,
+            });
+            console.log(`  ✅ Removed: ${pattern}`);
+          }
+        }
       } catch {
-        // Ignore errors for glob patterns that don't match
+        // Ignore directories that cannot be read or have no matches
       }
     } else {
       // Handle exact paths
@@ -55,11 +86,10 @@ function main() {
   // Clean workspace packages
   const workspacePaths = [
     '.github',
-    ...execSync('ls packages/', { stdio: 'pipe' })
-      .toString()
-      .trim()
-      .split('\n')
-      .map((packageName) => join('packages', packageName)),
+    // List packages without spawning a shell (cross-platform, no injection).
+    ...readdirSync('packages', { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => join('packages', entry.name)),
   ];
 
   try {
